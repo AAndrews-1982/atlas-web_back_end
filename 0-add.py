@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# 0. Basic annotations - add
+
 def add(a: float, b: float) -> float:
     # This is the function definition for 'add'.
     # 'def' is the keyword used to define a function in Python.
