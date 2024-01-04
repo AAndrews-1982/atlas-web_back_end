@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""4. Define variables"""
 
 a: int = 1  # An integer with a value of 1
 pi: float = 3.14  # A float with a value of 3.14
