@@ -2,8 +2,6 @@
 """"2. Basic annotations - floor"""
 
 
-import math
-
 def floor(n: float) -> int:
     """
     Return the floor of a float.
@@ -12,4 +10,5 @@ def floor(n: float) -> int:
     Returns:
     int: The floor of the floating-point number.
     """
-    return math.floor(n)
+    
+    return int(n)
