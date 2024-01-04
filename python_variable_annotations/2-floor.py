@@ -5,10 +5,8 @@
 def floor(n: float) -> int:
     """
     Return the floor of a float.
-    Parameters:
-    n (float): A floating-point number.
-    Returns:
-    int: The floor of the floating-point number.
+    Parameters: n (float): A floating-point number.
+    Returns: int: The floor of the floating-point number.
     """
-    
+
     return int(n)
