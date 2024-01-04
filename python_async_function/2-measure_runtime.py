@@ -1,33 +1,33 @@
 #!/usr/bin/env python3
 """2. Measure the runtime"""
 
-
-import time
 import asyncio
+import time
 from typing import Callable
 
-
+# Import wait_n from the previous file. Adjust the import path as needed.
 wait_n = __import__('1-concurrent_coroutines').wait_n
 
 
-async def measure_time(n: int, max_delay: int) -> float:
+def measure_time(n: int, max_delay: int) -> float:
     """
-    Measure the execution time of 'wait_n' and
-    return the average time per call.
+    Measure the total execution time of the wait_n
+    function and return the average.
     Args:
-        n (int): Number of times to execute 'wait_n'.
-        max_delay (int): Maximum delay to pass to 'wait_n'.
+        n (int): The number of times to execute wait_n.
+        max_delay (int): The maximum delay parameter for wait_n.
     Returns:
-        float: The average time taken per call to 'wait_n'.
+        float: The average time per execution of wait_n.
     """
     start_time = time.time()
-    await wait_n(n, max_delay)
+    asyncio.run(wait_n(n, max_delay))
     end_time = time.time()
 
-    total_time = end_time - start_time
-    return total_time / n
+    return (end_time - start_time) / n
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
+    # Example usage
     n = 5
     max_delay = 9
-    print(asyncio.run(measure_time(n, max_delay)))
+    print(f"Average time per call: {measure_time(n, max_delay)} seconds")
