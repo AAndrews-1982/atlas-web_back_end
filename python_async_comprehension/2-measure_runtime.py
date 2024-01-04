@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""
-This module imports 'async_comprehension' from the previous task and contains
-a coroutine called 'measure_runtime' which measures the runtime of executing
-'async_comprehension' four times in parallel.
-"""
+"""2. Run time for four parallel comprehensions"""
+
 
 import asyncio
-from your_previous_module import async_comprehension  # Replace with the actual module name
+from your_previous_module import async_comprehension
+# Replace with the actual module name
+
 
 async def measure_runtime():
     """
