@@ -1,27 +1,34 @@
 #!/usr/bin/env python3
-"""
-2. Run time for four parallel comprehensions
+""" 2. Run time for four parallel comprehensions
 
-Import async_comprehension from the previous file
-and write a measure_runtime coroutine
-that will execute async_comprehension four times in parallel
-using asyncio.gather.
+Custom Implementation of Parallel Async Comprehensions
+This script imports the async_comprehension coroutine
+from a previous implementation
+and includes a custom coroutine, calculate_runtime,
+that executes async_comprehension
+four times concurrently.
 
-measure_runtime should measure the total runtime and return it.
+The total execution time is measured and returned.
 
-Notice that the total runtime is roughly 10 seconds, explain it to yourself.
+The execution time is expected to be around 10 seconds due
+to the nature of asynchronous IO-bound tasks running in parallel.
 """
 import asyncio
 import time
 
+# Importing the async comprehension coroutine from another file
 async_comprehension = __import__('1-async_comprehension').async_comprehension
 
 
-async def measure_runtime() -> float:
+async def calculate_runtime() -> float:
     """
-    Run time for four parallel comprehensions
+    Measures the runtime of executing four async comprehensions in parallel.
     """
-    start = time.time()
-    await asyncio.gather(*(async_comprehension() for i in range(4)))
-    end = time.time()
-    return end - start
+    start_time = time.perf_counter()
+    # Using list comprehension to create four async tasks
+    tasks = [async_comprehension() for _ in range(4)]
+    await asyncio.gather(*tasks)
+    end_time = time.perf_counter()
+    # Calculating the total runtime
+    total_runtime = end_time - start_time
+    return total_runtime
