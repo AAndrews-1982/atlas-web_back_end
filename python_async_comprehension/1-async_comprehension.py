@@ -1,18 +1,13 @@
 #!/usr/bin/env python3
-"""task1: Reworked Async Comprehensions"""
+"""task1. Async Comprehensions"""
 
 from typing import List
 
-# Importing the asynchronous number generator
-number_generator = __import__("0-async_generator").async_generator
+async_generator = __import__("0-async_generator").async_generator
 
 
-async def gather_async_numbers() -> List[float]:
-    """Coroutine for collecting 10 random numbers asynchronously.
-    This function uses an asynchronous comprehension to iterate over
-    values produced by number_generator and assembles them into a list.
-
-    Returns:
-        List[float]: A list of 10 randomly generated floating-point numbers.
-    """
-    return [number async for number in number_generator()]
+async def async_comprehension() -> List[float]:
+    """coroutine that will collect 10 random numbers using
+    an async comprehensing over async_generator,
+    then return the 10 random numbers."""
+    return [i async for i in async_generator()]
