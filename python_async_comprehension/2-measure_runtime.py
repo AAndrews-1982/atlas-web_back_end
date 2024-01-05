@@ -3,11 +3,10 @@
 
 
 import asyncio
-from your_previous_module import async_comprehension
-# Replace with the actual module name
+import time
 
 
-async def measure_runtime():
+async def measure_runtime() -> float:
     """
     Coroutine that measures the runtime of executing 'async_comprehension'
     four times in parallel. Returns the total runtime.
