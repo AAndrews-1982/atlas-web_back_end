@@ -57,6 +57,27 @@ class Server:
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
         assert isinstance(page, int) and page > 0
         assert isinstance(page_size, int) and page_size > 0
+        """
+        Retrieve a specific page of data from the dataset.
+
+        This method calculates the start and end index for the desired
+        page and slices the dataset accordingly. If the requested
+        page is out of range
+        (i.e., the start index is beyond the end of the dataset),
+        an empty list is returned. It raises an AssertionError if the page
+        or page_size is not a positive integer.
+
+        Parameters:
+        page (int): The page number in the dataset pagination.
+        Must be a positive integer.
+        page_size (int): The number of items per page.
+        Must be a positive integer.
+
+        Returns:
+        List[List]: A list of lists, where each inner list represents
+        a row of data on the requested page.
+        Returns an empty list if the page is out of range.
+        """
 
         start_index, end_index = index_range(page, page_size)
         pages = []
