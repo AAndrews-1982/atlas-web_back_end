@@ -7,6 +7,21 @@ from typing import List, Dict
 
 
 def index_range(page: int, page_size: int) -> tuple:
+    """
+    Calculate the start and end index for
+    a given page and page size.
+
+    This function is used to determine the range
+    of records to return from a dataset for pagination purposes.
+
+    Parameters:
+    page (int): The current page number in the pagination sequence.
+    page_size (int): The number of items per page.
+
+    Returns:
+    tuple: A tuple containing two integers, representing the start
+    index and the end index for the page within the dataset.
+    """
     start_index = (page - 1) * page_size
     return start_index, start_index + page_size
 
