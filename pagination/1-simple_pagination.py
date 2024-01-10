@@ -5,7 +5,7 @@ import csv
 from typing import List
 
 
-def index_range(page: int, page_size: int) -> tuple:
+def index_range(page, page_size):
     """
     Calculate the start and end index for a page and page size.
     """
@@ -30,24 +30,19 @@ class Server:
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
         """
         Get a page from the dataset.
-
-        Parameters:
-        page (int): The page number. Must be a positive integer.
-        page_size (int): The number of items per page.
-        Must be a positive integer.
-
-        Returns:
-        List[List]: The list of items on the requested page.
-        Returns an empty list if the page is out of range.
-
-        Raises:
-        AssertionError: If `page` or `page_size` is
-        not a positive integer.
         """
-        assert isinstance(page, int) and page > 0,
-        "Page must be a positive integer"
-        assert isinstance(page_size, int) and page_size > 0,
-        "Page size must be a positive integer"
+        assert isinstance(page, int) and page > 0
+        assert isinstance(page_size, int) and page_size > 0
 
         start_index, end_index = index_range(page, page_size)
-        return self.dataset()[start_index:min(end_index, len(self.dataset()))]
+        pages = []
+
+        if start_index >= len(self.dataset()):
+            return pages
+
+        pages = self.dataset()
+        return pages[start_index:end_index]
+
+# Example usage
+# server = Server()
+# print(server.get_page(1, 10))
