@@ -60,12 +60,9 @@ class Server:
         """
         Retrieve a specific page of data from the dataset.
 
-        This method calculates the start and end index for the desired
-        page and slices the dataset accordingly. If the requested
-        page is out of range
-        (i.e., the start index is beyond the end of the dataset),
-        an empty list is returned. It raises an AssertionError if the page
-        or page_size is not a positive integer.
+        Use index_range to find the correct indexes
+        to paginate the dataset correctly and return
+        the appropriate page of the dataset
 
         Parameters:
         page (int): The page number in the dataset pagination.
