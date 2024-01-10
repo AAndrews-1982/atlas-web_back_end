@@ -63,17 +63,6 @@ class Server:
         Use index_range to find the correct indexes
         to paginate the dataset correctly and return
         the appropriate page of the dataset
-
-        Parameters:
-        page (int): The page number in the dataset pagination.
-        Must be a positive integer.
-        page_size (int): The number of items per page.
-        Must be a positive integer.
-
-        Returns:
-        List[List]: A list of lists, where each inner list represents
-        a row of data on the requested page.
-        Returns an empty list if the page is out of range.
         """
 
         start_index, end_index = index_range(page, page_size)
