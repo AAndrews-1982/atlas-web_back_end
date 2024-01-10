@@ -28,15 +28,30 @@ def index_range(page: int, page_size: int) -> tuple:
 
 class Server:
     """Server class to paginate a database of popular baby names."""
+
     DATA_FILE = "Popular_Baby_Names.csv"
 
     def __init__(self):
         self.__dataset = None
 
     def dataset(self) -> List[List]:
+        """
+        Retrieve and cache the dataset from a CSV file.
+
+        This function reads the dataset from a CSV file,
+        caches it in memory, and returns it. The dataset is stored
+        in a private variable and read from the file only once.
+        Subsequent calls return the cached data.
+
+        Returns:
+        List[List]: A list of lists where each inner list represents a
+        row of data from the dataset.
+        """
         if self.__dataset is None:
             with open(self.DATA_FILE) as f:
-                self.__dataset = list(csv.reader(f))[1:]  # Skip header row
+                reader = csv.reader(f)
+                self.__dataset = [row for row in reader][1:]  # Skip header row
+
         return self.__dataset
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
