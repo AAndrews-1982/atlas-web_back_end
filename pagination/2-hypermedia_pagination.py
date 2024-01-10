@@ -55,15 +55,12 @@ class Server:
         return self.__dataset
 
     def get_page(self, page: int = 1, page_size: int = 10) -> List[List]:
+        """Retrieves a specified page of data from the dataset.
+        It uses the index_range function to calculate
+        the start and end indices for the desired page."""
+
         assert isinstance(page, int) and page > 0
         assert isinstance(page_size, int) and page_size > 0
-        """
-        Retrieve a specific page of data from the dataset.
-
-        Use index_range to find the correct indexes
-        to paginate the dataset correctly and return
-        the appropriate page of the dataset
-        """
 
         start_index, end_index = index_range(page, page_size)
         pages = []
