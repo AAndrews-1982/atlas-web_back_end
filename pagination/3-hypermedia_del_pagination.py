@@ -8,53 +8,48 @@ from typing import List, Dict, Optional
 
 class Server:
     """Server class to paginate a database of popular baby names."""
-    FILE_PATH = "Popular_Baby_Names.csv"
+    DATA_FILE = "Popular_Baby_Names.csv"
 
     def __init__(self):
-        self._data_cache = None
-        self._data_indexed = None
+        self.__dataset = None
+        self.__indexed_dataset = None
 
-    def load_data(self) -> List[List]:
-        """Load and cache the dataset from CSV file."""
-        if self._data_cache is None:
-            with open(self.FILE_PATH) as file:
-                csv_reader = csv.reader(file)
-                self._data_cache = list(csv_reader)[1:]
-        return self._data_cache
+    def dataset(self) -> List[List]:
+        """Cached dataset"""
+        if self.__dataset is None:
+            with open(self.DATA_FILE) as f:
+                reader = csv.reader(f)
+                self.__dataset = [row for row in reader][1:]
+        return self.__dataset
 
     def indexed_dataset(self) -> Dict[int, List]:
-        """Create an indexed dataset for efficient retrieval."""
-        if self._data_indexed is None:
-            self._data_indexed = {
-                i: row for i, row in enumerate(self.load_data())
+        """Dataset indexed by sorting position, starting at 0"""
+        if self.__indexed_dataset is None:
+            self.__indexed_dataset = {
+                i: self.__dataset[i] for i in range(len(self.__dataset))
             }
-        return self._data_indexed
+        return self.__indexed_dataset
 
-    def get_resilient_page(self, index: int = None,
-                           page_size: int = 10) -> Dict:
-        """Provide hypermedia pagination with resilience to deletion."""
-        assert index is None or (isinstance(index, int) and
-                                 0 <= index < len(self._data_indexed))
-        assert isinstance(page_size, int) and page_size > 0
+    def get_hyper_index(self, index: Optional[int] = None,
+                        page_size: int = 10) -> Dict:
+        """Return a dictionary for deletion-resilient hypermedia pagination."""
+        assert isinstance(index, int) and isinstance(page_size, int)
+        assert index is None or 0 <= index < len(self.__indexed_dataset)
 
-        page_data = []
-        next_idx = index or 0
-        current_idx = next_idx
+        data = []
+        next_index = index if index is not None else 0
+        current_index = next_index
 
-        while len(page_data) < page_size and \
-                current_idx < len(self._data_indexed):
-            if current_idx in self._data_indexed:
-                page_data.append(self._data_indexed[current_idx])
-                next_idx = current_idx + 1
-            current_idx += 1
+        while len(data) < page_size and current_index < len(
+                self.__indexed_dataset):
+            if current_index in self.__indexed_dataset:
+                data.append(self.__indexed_dataset[current_index])
+                next_index = current_index + 1
+            current_index += 1
 
         return {
-            'index': index or 0,
-            'next_index': next_idx,
-            'page_size': len(page_data),
-            'data': page_data
+            'index': index if index is not None else 0,
+            'next_index': next_index,
+            'page_size': len(data),
+            'data': data
         }
-
-# Example usage
-# server = Server()
-# print(server.get_resilient_page(0, 10))
