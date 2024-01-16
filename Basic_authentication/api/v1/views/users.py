@@ -103,10 +103,10 @@ def update_user(user_id: str = None) -> str:
       - 400 if can't update the User
     """
     if user_id is None:
-        abort(404)
+        abort(400)
     user = User.get(user_id)
     if user is None:
-        abort(404)
+        abort(400)
     rj = None
     try:
         rj = request.get_json()
