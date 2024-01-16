@@ -16,7 +16,7 @@ Functions:
 import bcrypt
 
 
-def hash_password(password: str) -> bytes:
+def is_valid(hashed_password: bytes, password: str) -> bool:
     """
     Hashes a password with a generated salt.
 
