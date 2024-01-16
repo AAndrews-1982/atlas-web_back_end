@@ -105,3 +105,37 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     except mysql.connector.Error as err:
         print(f"Database connection error: {err}")
         raise
+
+# Assuming get_db, get_logger, and PII_FIELDS
+# are defined elsewhere in your code
+
+
+def main() -> None:
+    """
+    Main function to demonstrate functionality.
+
+    Obtains a database connection, retrieves all rows from the users table,
+    and logs each row in a filtered format to protect personal information.
+    """
+    db_conn = get_db()
+    cursor = db_conn.cursor()
+    query = "SELECT * FROM users;"
+    cursor.execute(query)
+    rows = cursor.fetchall()
+
+    logger = get_logger()
+
+    for row in rows:
+        log_message = (
+            f"name={row[0]}; email={row[1]}; phone={row[2]}; "
+            f"ssn={row[3]}; password={row[4]}; ip={row[5]}; "
+            f"last_login={row[6]}; user_agent={row[7]}"
+        )
+        logger.info(log_message)
+
+    cursor.close()
+    db_conn.close()
+
+
+if __name__ == "__main__":
+    main()
