@@ -27,3 +27,4 @@ def hash_password(password: str) -> bytes:
         bytes: Salted, hashed password.
     """
     password_bytes = password.encode('utf-8')
+    return bcrypt.checkpw(password_bytes, hashed_password)
