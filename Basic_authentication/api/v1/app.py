@@ -7,6 +7,7 @@ from api.v1.views import app_views
 from flask import Flask, jsonify, abort, request
 from flask_cors import (CORS, cross_origin)
 import os
+from flask_cors import CORS
 
 
 app = Flask(__name__)
@@ -25,13 +26,6 @@ def not_found(error) -> str:
 def unauthorized(error) -> str:
     """ Unauthorized handler """
     return jsonify({"error": "Unauthorized"}), 401
-
-
-# Add this endpoint in api/v1/views/index.py
-@app.route('/api/v1/unauthorized')
-def unauthorized_test():
-    """ Endpoint to raise a 401 error """
-    abort(401)
 
 
 if __name__ == "__main__":
