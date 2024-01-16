@@ -9,11 +9,20 @@ User = TypeVar('User')  # Define a TypeVar for User
 
 class Auth:
     """Class to manage API authentication"""
+
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
         Determines if authentication is required for a particular path
         """
-        return False  # This will be implemented later
+        if path is None or not excluded_paths:
+            return True
+
+        # Add a slash at the end of the path if not present for slash tolerance
+        if path[-1] != '/':
+            path += '/'
+
+        # Check if the path is in excluded paths
+        return path not in excluded_paths
 
     def authorization_header(self, request=None) -> str:
         """
