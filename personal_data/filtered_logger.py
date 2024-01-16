@@ -3,6 +3,9 @@
 import re
 import logging
 from typing import List
+import os
+import mysql.connector
+from mysql.connector import connection
 
 
 def filter_datum(
@@ -75,3 +78,30 @@ def get_logger() -> logging.Logger:
     logger.addHandler(stream_handler)
 
     return logger
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """
+    Establishes and returns a connection to the database.
+
+    Uses environment variables for database credentials and host.
+    Database name is obtained from PERSONAL_DATA_DB_NAME environment variable.
+
+    Returns:
+        MySQLConnection: Connection object to the MySQL database.
+    """
+    db_user = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
+    db_password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
+    db_host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
+    db_name = os.getenv('PERSONAL_DATA_DB_NAME')  # Assumes env var is set
+
+    try:
+        return mysql.connector.connect(
+            user=db_user,
+            password=db_password,
+            host=db_host,
+            database=db_name
+        )
+    except mysql.connector.Error as err:
+        print(f"Database connection error: {err}")
+        raise
