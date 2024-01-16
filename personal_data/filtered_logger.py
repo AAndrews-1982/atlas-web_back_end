@@ -45,3 +45,33 @@ class RedactingFormatter(logging.Formatter):
         record.msg = filter_datum(self.fields, self.REDACTION,
                                   record.getMessage(), self.SEPARATOR)
         return super(RedactingFormatter, self).format(record)
+
+# Assuming RedactingFormatter is defined elsewhere in your code
+# from your_module import RedactingFormatter
+
+# Example PII fields - adjust these based on your user_data.csv
+
+
+PII_FIELDS = ('name', 'email', 'phone', 'ssn', 'password')
+
+
+def get_logger() -> logging.Logger:
+    """
+    Creates a logger object named 'user_data'.
+    The logger logs up to INFO level and does not propagate messages.
+    It uses a StreamHandler with a RedactingFormatter.
+
+    Returns:
+        logging.Logger: Configured logger object.
+    """
+    logger = logging.getLogger('user_data')
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    # Create a StreamHandler with RedactingFormatter
+    stream_handler = logging.StreamHandler()
+    formatter = RedactingFormatter(fields=list(PII_FIELDS))
+    stream_handler.setFormatter(formatter)
+    logger.addHandler(stream_handler)
+
+    return logger
