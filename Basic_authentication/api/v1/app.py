@@ -20,6 +20,9 @@ AUTH_TYPE = getenv("AUTH_TYPE")
 if AUTH_TYPE:
     from api.v1.auth.auth import Auth
     auth = Auth()  # Create an instance of Auth
+else:
+    from api.v1.auth.auth import Auth
+    auth = Auth()  # Create an instance of Auth
 
 
 @app.before_request
