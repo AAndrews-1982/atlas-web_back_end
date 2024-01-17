@@ -9,15 +9,19 @@ from typing import TypeVar
 
 class BasicAuth(Auth):
     """ BasicAuthenticacion class """
+    def __init__(self):
+        """
+        __init__ constructor method for BasicAuth class to create an instance
+        """
     def extract_base64_authorization_header(self,
                                             authorization_header: str) -> str:
         """Extract_base65 returns the Base64 part of the Authorization
         header for a Basic Authentication:"""
         if authorization_header is None:
             return None
-        if type(authorization_header) is not str:
+        if not isinstance(authorization_header, str):
             return None
-        if authorization_header[0:6] != 'Basic ':
+        if not authorization_header.startswith('Basic '):
             return None
         return authorization_header[6:]
 
