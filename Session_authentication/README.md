@@ -1,39 +1,42 @@
-# Session authentication
+# Basic authentication
 
-## Background Context
+### Background Context
 
-In this project, you will implement a Session Authentication. You are not allowed to install any other module.
+In this project, you will learn what the authentication process means and implement a Basic Authentication on a simple API.
 
-In the industry, you should not implement your own Session authentication system and use a module or framework that doing it for you (like in Python-Flask: Flask-HTTPAuth). Here, for the learning purpose, we will walk through each step of this mechanism to understand it by doing.
+In the industry, you should not implement your own Basic authentication system and use a module or framework that doing it for you (like in Python-Flask: Flask-HTTPAuth Link: https://flask-httpauth.readthedocs.io/en/latest/).
 
-## Resources
+Here, for the learning purpose, we will walk through each step of this mechanism to understand it by doing.
 
-#### Read or watch:
+![6ccb363443a8f301bc2bc38d7a08e9650117de7c](https://github.com/AAndrews-1982/atlas-web_back_end/assets/116847683/0537beba-b8bb-4f02-a445-8401faeba83b)
 
-- REST API Authentication Mechanisms - Only the session auth part
-  Link: https://www.youtube.com/watch?v=501dpx2IjGY
-- HTTP Cookie
-  Link: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie
-- Flask
-  Link: https://palletsprojects.com/p/flask/
-- Flask Cookie
-  Link: https://flask.palletsprojects.com/en/1.1.x/quickstart/#cookies
+# Resources
+Read or watch:
 
-## Learning Objectives
+#### REST API Authentication Mechanisms
+Link: https://www.youtube.com/watch?v=501dpx2IjGY
+#### Base64 in Python
+Link: https://docs.python.org/3.7/library/base64.html
+#### HTTP header Authorization
+Link: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization
+#### Flask
+Link: https://palletsprojects.com/p/flask/
+#### Base64 - concept
+Link: https://en.wikipedia.org/wiki/Base64
 
+# Learning Objectives
 At the end of this project, you are expected to be able to explain to anyone, without the help of Google:
 
-### General
-
+- General
 - What authentication means
-- What session authentication means
-- What Cookies are
-- How to send Cookies
-- How to parse Cookies
+- What Base64 is
+- How to encode a string in Base64
+- What Basic authentication means
+- How to send the Authorization header
 
-## Requirements
+# Requirements
 
-#### Python Scripts
+### Python Scripts
 
 - All your files will be interpreted/compiled on Ubuntu 18.04 LTS using python3 (version 3.7)
 - All your files should end with a new line
