@@ -12,6 +12,10 @@ def view_all_users() -> str:
     Return:
       - list of all User objects JSON represented
     """
+    # Assuming auth.current_user() handles the authentication and returns None if authentication fails
+    if auth.current_user(request) is None:
+        abort(401)  # Unauthorized
+
     all_users = [user.to_json() for user in User.all()]
     return jsonify(all_users)
 
@@ -27,9 +31,19 @@ def view_one_user(user_id: str = None) -> str:
     """
     if user_id is None:
         abort(404)
-    request.current_user = auth.current_user(request)
-    if request.current_user is None:
-        abort(403)
+
+    # Handle the "me" user ID
+    if user_id == "me":
+        current_user = auth.current_user(request)
+        if current_user is None:
+            abort(401)  # Unauthorized
+        return jsonify(current_user.to_json())
+
+    # For other user IDs
+    user = User.get(user_id)
+    if user is None:
+        abort(404)
+    return jsonify(user.to_json())
 
 
 @app_views.route('/users/<user_id>', methods=['DELETE'], strict_slashes=False)
