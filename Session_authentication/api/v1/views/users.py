@@ -29,7 +29,7 @@ def view_one_user(user_id: str = None) -> str:
         abort(404)
     request.current_user = auth.current_user(request)
     if request.current_user is None:
-            abort(403)
+        abort(403)
 
 
 @app_views.route('/users/<user_id>', methods=['DELETE'], strict_slashes=False)

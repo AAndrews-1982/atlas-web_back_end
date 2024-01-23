@@ -33,11 +33,19 @@ def before_request_func():
                           '/api/v1/forbidden/']
         if not auth.require_auth(request.path, excluded_paths):
             return
-        if auth.authorization_header(request) is None:
-            abort(401)
+        # Check for the presence of the Authorization header
+        auth_header = auth.authorization_header(request)
+        if auth_header is None:
+            abort(401)  # Unauthorized if the header is missing
+
+        # Retrieve the current user based on the Authorization header
         request.current_user = auth.current_user(request)
         if request.current_user is None:
-            abort(403)
+            # Distinguish between a non-existent user and wrong password
+            if auth.user_exists(request):
+                abort(403)  # Forbidden if the user exists but wrong password
+            else:
+                abort(401)  # Unauthorized if the user doesn't exist
 
 
 @app.errorhandler(404)
