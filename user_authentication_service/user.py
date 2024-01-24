@@ -32,3 +32,16 @@ class User(Base):
     hashed_password = Column(String(250), nullable=False)
     session_id = Column(String(250), nullable=True)
     reset_token = Column(String(250), nullable=True)
+
+class User:
+    def __init__(self, **kwargs):
+        """ Initialize a User instance with keyword arguments.
+
+        Args:
+            kwargs: Keyword arguments for user attributes. Expected keys are
+                    'email', 'hashed_password', 'session_id', and 'reset_token'.
+        """
+        self.email = kwargs.get('email')
+        self.hashed_password = kwargs.get('hashed_password')
+        self.session_id = kwargs.get('session_id')
+        self.reset_token = kwargs.get('reset_token')
