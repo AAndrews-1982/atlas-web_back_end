@@ -1,37 +1,50 @@
 #!/usr/bin/env python3
-"""3. Auth class"""
+""" Auth class """
 
 from flask import request
-from typing import List, TypeVar
+from typing import List, TypeVar, Optional
+import os
+import base64
 
-User = TypeVar('User')  # Define a TypeVar for User
+UserType = TypeVar('UserType')  # Define a TypeVar for User
 
 
-class Auth:
-    """Class to manage API authentication"""
+class Auth():
+    """ Auth class """
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """
-        Determines if authentication is required for a particular path
-        """
+        """ Determine if authentication is required for a path """
         if path is None or not excluded_paths:
             return True
+        path = path + '/' if path[-1] != '/' else path
+        return not any(ep.endswith('/') and path.startswith(ep)
+                       for ep in excluded_paths)
 
-        # Add a slash at the end of the path if not present for slash tolerance
-        if path[-1] != '/':
-            path += '/'
+    def authorization_header(self, request=None) -> Optional[str]:
+        """ Retrieve Authorization header from a Flask request """
+        if request:
+            return request.headers.get('Authorization')
+        return None
 
-        # Check if the path is in excluded paths
-        return path not in excluded_paths
+    def current_user(self, request=None) -> UserType:
+        """ Retrieve the current user from a Flask request """
+        auth_header = self.authorization_header(request)
+        if auth_header is None:
+            return None
 
-    def authorization_header(self, request=None) -> str:
-        """
-        Retrieves the Authorization header from a Flask request object
-        """
-        return None  # To be implemented
+        encoded = auth_header.replace('Basic ', '', 1)
+        decoded = base64.b64decode(encoded).decode('utf-8')
+        username, password = decoded.split(':', 1)
 
-    def current_user(self, request=None) -> User:
-        """
-        Retrieves the current user from a Flask request object
-        """
-        return None  # To be implemented
+        # Placeholder for user verification logic
+        # Implement user verification here
+
+        return None
+
+    def session_cookie(self, request=None):
+        """ Retrieve a session cookie from a Flask request """
+        if request:
+            session_name = os.getenv('SESSION_NAME',
+                                     'your_default_session_name')
+            return request.cookies.get(session_name)
+        return None
