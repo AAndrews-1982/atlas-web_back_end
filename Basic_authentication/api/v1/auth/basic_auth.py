@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Module providing the BasicAuth class for basic authentication handling in the API.
+Module providing the BasicAuth class for basic authentication
+handling in the API.
 It extends the Auth class with methods specific to Basic Authentication.
 """
 
@@ -8,6 +9,7 @@ from api.v1.auth.auth import Auth
 from base64 import b64decode, binascii
 from models.user import User
 from typing import TypeVar, Tuple
+
 
 class BasicAuth(Auth):
     """
@@ -28,7 +30,8 @@ class BasicAuth(Auth):
         - authorization_header (str): The authorization header.
 
         Returns:
-        - str: The Base64 part of the header, or None if invalid.
+        - str: The Base64 part of the header, 
+        or None if invalid.
         """
         if not authorization_header or not isinstance(authorization_header, str):
             return None
@@ -67,7 +70,8 @@ class BasicAuth(Auth):
         - decoded_base64_authorization_header (str): Decoded auth header.
 
         Returns:
-        - Tuple[str, str]: Email and password, or (None, None) if invalid.
+        - Tuple[str, str]: Email and password, 
+        or (None, None) if invalid.
         """
         if not decoded_base64_authorization_header or ':' not in decoded_base64_authorization_header:
             return None, None
@@ -84,7 +88,8 @@ class BasicAuth(Auth):
         - user_pwd (str): User's password.
 
         Returns:
-        - User: User instance if credentials are valid, otherwise None.
+        - User: User instance if credentials are valid,
+        otherwise None.
         """
         if not user_email or not user_pwd or not isinstance(user_email, str) or not isinstance(user_pwd, str):
             return None
