@@ -32,4 +32,3 @@ def forbidden():
     Triggers a 403 Forbidden error
     """
     abort(403)
-    
