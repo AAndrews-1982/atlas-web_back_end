@@ -3,13 +3,27 @@
 ![image](https://github.com/AAndrews-1982/atlas-web_back_end/assets/116847683/3803e335-2216-4f09-ae3b-5f7d603b5583)
 
 ## Resources
-Read or watch:
+#### Read or watch:
 
-REST API Authentication Mechanisms
-Base64 in Python
-HTTP header Authorization
-Flask
-Base64 - concept
+- REST API Authentication Mechanisms
+
+  Link: https://www.youtube.com/watch?v=501dpx2IjGY
+
+- Base64 in Python
+
+  Link: https://docs.python.org/3.7/library/base64.html
+
+- HTTP header Authorization
+
+  Link : https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization
+
+- Flask
+
+  Link: https://palletsprojects.com/p/flask/
+
+- Base64 - concept
+
+  Link: https://en.wikipedia.org/wiki/Base64
 
 ## Learning Objectives
 
