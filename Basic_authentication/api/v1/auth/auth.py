@@ -42,4 +42,3 @@ class Auth:
         Returns the current user from the request.
         """
         return None
-    
