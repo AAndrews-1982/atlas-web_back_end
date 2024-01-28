@@ -60,6 +60,24 @@ def forbidden(error) -> str:
     return jsonify({"error": "Forbidden"}), 403
 
 
+@app.errorhandler(401)
+def unauthorized(error):
+    """
+    Error handler for 401 Unauthorized access.
+
+    Invoked when an unauthorized access attempt is made on a protected endpoint
+    without valid credentials. Responds with a JSON payload indicating the
+    error and HTTP status code 401.
+
+    Parameters:
+    - error: Flask error object for the unauthorized access.
+
+    Returns:
+    - JSON response {"error": "Unauthorized"} with HTTP status code 401.
+    """
+    return jsonify({"error": "Unauthorized"}), 401
+
+
 if __name__ == "__main__":
     host = getenv("API_HOST", "0.0.0.0")
     port = getenv("API_PORT", "5000")
