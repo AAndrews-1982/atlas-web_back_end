@@ -1,50 +1,43 @@
 #!/usr/bin/env python3
-""" Auth class """
-
+"""
+Auth module for handling authentication.
+"""
 from flask import request
-from typing import List, TypeVar, Optional
-import os
-import base64
-
-UserType = TypeVar('UserType')  # Define a TypeVar for User
+from typing import List, TypeVar
 
 
-class Auth():
-    """ Auth class """
+class Auth:
+    """
+    Auth class to manage the API authentication.
+    """
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """ Determine if authentication is required for a path """
-        if path is None or not excluded_paths:
+        """
+        Determines if the path requires authentication.
+        """
+        if path is None or excluded_paths is None or len(excluded_paths) == 0:
             return True
-        path = path + '/' if path[-1] != '/' else path
-        return not any(ep.endswith('/') and path.startswith(ep)
-                       for ep in excluded_paths)
 
-    def authorization_header(self, request=None) -> Optional[str]:
-        """ Retrieve Authorization header from a Flask request """
-        if request:
-            return request.headers.get('Authorization')
-        return None
+        # Normalize paths to ensure slash tolerance
+        normalized_excluded = [
+            p[:-1] if p.endswith('/') else p
+            for p in excluded_paths]
 
-    def current_user(self, request=None) -> UserType:
-        """ Retrieve the current user from a Flask request """
-        auth_header = self.authorization_header(request)
-        if auth_header is None:
+        # Normalize the input path in the same way
+        normalized_path = path[:-1] if path.endswith('/') else path
+
+        return normalized_path not in normalized_excluded
+
+    def authorization_header(self, request=None) -> str:
+        """
+        Returns the Authorization header value from the request.
+        """
+        if request is None:
             return None
+        return request.headers.get('Authorization', None)
 
-        encoded = auth_header.replace('Basic ', '', 1)
-        decoded = base64.b64decode(encoded).decode('utf-8')
-        username, password = decoded.split(':', 1)
-
-        # Placeholder for user verification logic
-        # Implement user verification here
-
-        return None
-
-    def session_cookie(self, request=None):
-        """ Retrieve a session cookie from a Flask request """
-        if request:
-            session_name = os.getenv('SESSION_NAME',
-                                     'your_default_session_name')
-            return request.cookies.get(session_name)
+    def current_user(self, request=None) -> TypeVar('User'):
+        """
+        Returns the current user from the request.
+        """
         return None
