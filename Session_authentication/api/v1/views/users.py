@@ -12,10 +12,6 @@ def view_all_users() -> str:
     Return:
       - list of all User objects JSON represented
     """
-    # Assuming auth.current_user() handles the authentication and returns None if authentication fails
-    if auth.current_user(request) is None:
-        abort(401)  # Unauthorized
-
     all_users = [user.to_json() for user in User.all()]
     return jsonify(all_users)
 
@@ -24,22 +20,22 @@ def view_all_users() -> str:
 def view_one_user(user_id: str = None) -> str:
     """ GET /api/v1/users/:id
     Path parameter:
-      - User ID
+      - User ID or 'me' for the current authenticated user
     Return:
       - User object JSON represented
-      - 404 if the User ID doesn't exist
+      - 404 if the User ID doesn't exist or if 'me' is used
+        and no user is authenticated
     """
     if user_id is None:
         abort(404)
 
-    # Handle the "me" user ID
-    if user_id == "me":
-        current_user = auth.current_user(request)
-        if current_user is None:
-            abort(401)  # Unauthorized
-        return jsonify(current_user.to_json())
+    # Check if user_id is 'me' and handle accordingly
+    if user_id == 'me':
+        if request.current_user is None:
+            abort(404)
+        return jsonify(request.current_user.to_json())
 
-    # For other user IDs
+    # The rest of the function remains the same for normal user ID requests
     user = User.get(user_id)
     if user is None:
         abort(404)
@@ -116,10 +112,10 @@ def update_user(user_id: str = None) -> str:
       - 400 if can't update the User
     """
     if user_id is None:
-        abort(400)
+        abort(404)
     user = User.get(user_id)
     if user is None:
-        abort(400)
+        abort(404)
     rj = None
     try:
         rj = request.get_json()
