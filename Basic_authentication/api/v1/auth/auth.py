@@ -19,7 +19,6 @@ class Auth:
             return True
 
         # Normalize paths to ensure slash tolerance
-        normalized_path = path[:-1] if path.endswith('/') else path
         normalized_excluded = [
             p[:-1] if p.endswith('/') else p
             for p in excluded_paths]
