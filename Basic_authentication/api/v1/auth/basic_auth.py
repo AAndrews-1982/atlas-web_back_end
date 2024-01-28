@@ -6,10 +6,8 @@ to support authentication using Base64 encoded credentials.
 """
 from api.v1.auth.auth import Auth
 from models.user import User
-from typing import TypeVar, Tuple
+from typing import TypeVar
 import base64
-
-UserType = TypeVar('User')
 
 
 class BasicAuth(Auth):
@@ -60,7 +58,8 @@ class BasicAuth(Auth):
             return None
 
     def extract_user_credentials(
-            self, decoded_base64_authorization_header: str) -> Tuple[str, str]:
+        self,
+            decoded_base64_authorization_header: str):
         """
         Extracts user credentials from the decoded Base64 string.
 
@@ -68,7 +67,7 @@ class BasicAuth(Auth):
         decoded_base64_authorization_header (str): Decoded credentials.
 
         Returns:
-        Tuple[str, str]: User email and password, or (None, None) if invalid.
+        A tuple containing user email and password, or (None, None) if invalid.
         """
         if decoded_base64_authorization_header is None or \
            not isinstance(decoded_base64_authorization_header, str):
