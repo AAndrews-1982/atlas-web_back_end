@@ -4,20 +4,18 @@ Route module for the API
 """
 from api.v1.views import app_views
 from flask import Flask, jsonify, abort, request
-from flask_cors import (CORS, cross_origin)
-import os import getenv
-
+from flask_cors import CORS, cross_origin
+import os
+from os import getenv
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
-
 # Load authentication instance based on AUTH_TYPE
 if getenv("AUTH_TYPE") == 'auth':
     from api.v1.auth.auth import Auth
     auth = Auth()
-
 elif getenv("AUTH_TYPE") == "basic_auth":
     from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
@@ -25,7 +23,7 @@ elif getenv("AUTH_TYPE") == "basic_auth":
 
 @app.before_request
 def before_request_func():
-    """ Filter each request to ensure authentication and authorization.
+    """Filter each request to ensure authentication and authorization.
 
     - If the 'auth' object is None, no authentication is required.
     - The request is allowed through without authentication for certain paths
@@ -38,8 +36,7 @@ def before_request_func():
     if auth is None:
         return
 
-    exempt_paths = ['/api/v1/status/',
-                    '/api/v1/unauthorized/',
+    exempt_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
                     '/api/v1/forbidden/']
     if not auth.require_auth(request.path, exempt_paths):
         return
@@ -54,32 +51,19 @@ def before_request_func():
 
 @app.errorhandler(404)
 def not_found(error) -> str:
-    """ Not found handler
-    """
+    """Not found handler."""
     return jsonify({"error": "Not found"}), 404
 
 
 @app.errorhandler(403)
 def forbidden(error) -> str:
-    """ Forbidden handler """
+    """Forbidden handler."""
     return jsonify({"error": "Forbidden"}), 403
 
 
 @app.errorhandler(401)
 def unauthorized(error):
-    """
-    Error handler for 401 Unauthorized access.
-
-    Invoked when an unauthorized access attempt is made on a protected endpoint
-    without valid credentials. Responds with a JSON payload indicating the
-    error and HTTP status code 401.
-
-    Parameters:
-    - error: Flask error object for the unauthorized access.
-
-    Returns:
-    - JSON response {"error": "Unauthorized"} with HTTP status code 401.
-    """
+    """Error handler for 401 Unauthorized access."""
     return jsonify({"error": "Unauthorized"}), 401
 
 
