@@ -56,7 +56,7 @@ class BasicAuth(Auth):
             return None
 
     def extract_user_credentials(
-        self, decoded_base64_authorization_header: str) -> (str, str):
+            self, decoded_base64_authorization_header: str) -> (str, str):
         """
         Extracts user email and password from decoded credentials.
 
@@ -76,7 +76,7 @@ class BasicAuth(Auth):
         return decoded_base64_authorization_header.split(':', 1)
 
     def user_object_from_credentials(
-        self, user_email: str, user_pwd: str) -> TypeVar('User'):
+            self, user_email: str, user_pwd: str) -> TypeVar('User'):
         """
         Retrieves User instance based on email and password.
 
