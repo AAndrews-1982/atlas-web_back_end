@@ -22,6 +22,31 @@ if getenv('AUTH_TYPE') == 'auth':
     auth = Auth()
 
 
+@app.before_request
+def before_request_func():
+    """ Filter each request to ensure authentication and authorization.
+
+    - If the 'auth' object is None, no authentication is required.
+    - The request is allowed through without authentication for certain paths
+      specified in the 'exempt_paths' list.
+    - If the request does not contain an 'Authorization' header, the server
+      aborts with a 401 Unauthorized status.
+    - If the 'Authorization' header is present but the user cannot be
+      identified or authorized, the server aborts with a 403 Forbidden status.
+      """
+    if auth is None:
+        return
+    if not auth.require_auth(request.path,
+                             ['/api/v1/status/',
+                              '/api/v1/unauthorized/',
+                              '/api/v1/forbidden/']):
+        return
+    if auth.authorization_header(request) is None:
+        abort(401)
+    if auth.current_user(request) is None:
+        abort(403)
+
+
 @app.errorhandler(404)
 def not_found(error) -> str:
     """ Not found handler
