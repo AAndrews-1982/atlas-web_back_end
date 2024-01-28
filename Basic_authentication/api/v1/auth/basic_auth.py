@@ -75,31 +75,34 @@ class BasicAuth(Auth):
         return credentials[0], credentials[1]
 
     def user_object_from_credentials(
-            self, user_email: str, user_pwd: str
-            ) -> TypeVar('User'):
+            self, user_email: str, user_pwd: str) -> TypeVar('User'):
         """
-        Retrieves the User instance based on email and password.
+        Retrieves a User instance based on email and password.
+
+        This method validates the user's credentials against stored data.
+        It first checks if the email and password are valid strings. Then, it
+        looks up the user in the database by email. If the user is found, it
+        verifies the password. If the credentials are valid, it returns the
+        User instance; otherwise, it returns None.
 
         Args:
-        user_email (str): The email of the user.
-        user_pwd (str): The password of the user.
+        user_email (str): Email of the user.
+        user_pwd (str): Password of the user.
 
         Returns:
-        UserType: User instance if valid, otherwise None.
+        The User instance if credentials are valid, None otherwise.
         """
-# Return None if user_email or user_pwd is None or not a string
-# Return None if user_email or user_pwd is None or not a string
-        if not isinstance(user_email, str) or not isinstance(user_pwd, str):
+        if user_email is None or not isinstance(user_email, str):
+            return None
+        if user_pwd is None or not isinstance(user_pwd, str):
             return None
 
-        # Search for user by email
         users = User.search({'email': user_email})
         if not users:
-            return None  # No user found with the email
+            return None
 
-        # Check if the password is correct
         user = users[0]
-        if user.is_valid_password(user_pwd):
-            return user  # Return user instance if password is correct
+        if not user.is_valid_password(user_pwd):
+            return None
 
-        return None  # Return None if password is incorrect
+        return user
