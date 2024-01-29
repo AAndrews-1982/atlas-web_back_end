@@ -21,12 +21,6 @@ class BasicAuth(Auth):
             self, authorization_header: str) -> str:
         """
         Extracts the Base64 encoded part from the Authorization header.
-
-        Args:
-        authorization_header (str): The full Authorization header.
-
-        Returns:
-        str: The Base64 encoded part, or None if invalid.
         """
         if authorization_header is None or \
            not isinstance(authorization_header, str) or \
@@ -39,12 +33,6 @@ class BasicAuth(Auth):
             self, base64_authorization_header: str) -> str:
         """
         Decodes the Base64 encoded part of the Authorization header.
-
-        Args:
-        base64_authorization_header (str): The Base64 encoded part.
-
-        Returns:
-        str: Decoded string, or None if decoding fails.
         """
         if base64_authorization_header is None or \
            not isinstance(base64_authorization_header, str):
@@ -84,13 +72,6 @@ class BasicAuth(Auth):
         looks up the user in the database by email. If the user is found, it
         verifies the password. If the credentials are valid, it returns the
         User instance; otherwise, it returns None.
-
-        Args:
-        user_email (str): Email of the user.
-        user_pwd (str): Password of the user.
-
-        Returns:
-        The User instance if credentials are valid, None otherwise.
         """
         if user_email is None or not isinstance(user_email, str):
             return None
@@ -106,3 +87,28 @@ class BasicAuth(Auth):
             return None
 
         return user
+
+
+def current_user(self, request=None) -> Optional[User]:
+    """
+    Retrieves the User instance associated with the given request.
+
+    This method overloads Auth and is used to identify
+    the user making a request.
+
+    Note:
+        The method assumes that the authorization header contains credentials
+        in a specific format (e.g., Base64 encoded) and relies on other helper
+        methods (`authorization_header`, `extract_base64_authorization_header`,
+        `decode_base64_authorization_header`, `extract_user_credentials`, and
+        `user_object_from_credentials`) to process this information.
+    """
+    if request is None:
+        return None
+    authorized_header = self.authorization_header(request)
+    b64_head = self.extract_base64_authorization_header(authorized_header)
+    dc_head = self.decode_base64_authorization_header(b64_head)
+    user_email, user_pwd = self.extract_user_credentials(dc_head)
+    user = self.user_object_from_credentials(user_email, user_pwd)
+
+    return user
