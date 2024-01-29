@@ -26,9 +26,19 @@ def stats() -> str:
     return jsonify(stats)
 
 
-@app_views.route('/forbidden', methods=['GET'], strict_slashes=False)
-def forbidden():
-    """ GET /api/v1/forbidden
-    Triggers a 403 Forbidden error
+@app_views.route("/unauthorized", methods=["GET"], strict_slashes=False)
+def test_unathourized() -> str:
+    """GET /api/v1/unauthorized
+    Return:
+      - Raise error
     """
-    abort(403)
+    return abort(401)
+
+
+@app_views.route("/forbidden", methods=["GET"], strict_slashes=False)
+def forbidden() -> str:
+    """GET /api/v1/forbidden
+    Return:
+      - Raise error
+    """
+    return abort(403)
