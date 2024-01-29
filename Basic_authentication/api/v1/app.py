@@ -72,22 +72,6 @@ def not_found(error) -> str:
     return jsonify({"error": "Not found"}), 404
 
 
-@app.errorhandler(403)
-def forbidden(error) -> str:
-    """
-    Error handler for 403 Forbidden.
-
-    This function is triggered when a user tries to access
-    a resource they do not have
-    permission for. It returns a JSON response with an
-    error message and a 403 HTTP status code.
-
-    Parameters:
-    - error: Flask error object for the forbidden error.
-    """
-    return jsonify({"error": "Forbidden"}), 403
-
-
 @app.errorhandler(401)
 def unauthorized(error):
     """
@@ -102,6 +86,22 @@ def unauthorized(error):
     - error: Flask error object for the unauthorized error.
     """
     return jsonify({"error": "Unauthorized"}), 401
+
+
+@app.errorhandler(403)
+def forbidden(error) -> str:
+    """
+    Error handler for 403 Forbidden.
+
+    This function is triggered when a user tries to access
+    a resource they do not have
+    permission for. It returns a JSON response with an
+    error message and a 403 HTTP status code.
+
+    Parameters:
+    - error: Flask error object for the forbidden error.
+    """
+    return jsonify({"error": "Forbidden"}), 403
 
 
 if __name__ == "__main__":
