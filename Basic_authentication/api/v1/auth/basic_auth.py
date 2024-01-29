@@ -89,7 +89,7 @@ class BasicAuth(Auth):
         return user
 
 
-def current_user(self, request=None) -> Optional[User]:
+def current_user(self, request=None) -> TypeVar('User'):
     """
     Retrieves the User instance associated with the given request.
 
