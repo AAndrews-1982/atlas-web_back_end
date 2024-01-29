@@ -6,10 +6,13 @@ registers blueprints for routing,
 and configures authentication mechanisms based on environment variables.
 """
 
-from flask import Flask, jsonify, abort, request
-from flask_cors import CORS
 from os import getenv
 from api.v1.views import app_views
+from api.v1.auth.auth import Auth
+from api.v1.auth.basic_auth import BasicAuth
+from flask import Flask, jsonify, abort, request
+from flask_cors import (CORS, cross_origin)
+import os
 
 app = Flask(__name__)
 app.register_blueprint(app_views)
@@ -20,14 +23,11 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 
 # Dynamically load the authentication mechanism
 # based on the AUTH_TYPE environment variable
-if getenv("AUTH_TYPE") == 'auth':
-    from api.v1.auth.auth import Auth
-    auth = Auth()
-elif getenv("AUTH_TYPE") == "basic_auth":
-    from api.v1.auth.basic_auth import BasicAuth
+auth_type = os.getenv("AUTH_TYPE", "auth")
+if auth_type == "basic_auth":
     auth = BasicAuth()
 else:
-    auth = None
+    auth = Auth()
 
 
 @app.before_request
