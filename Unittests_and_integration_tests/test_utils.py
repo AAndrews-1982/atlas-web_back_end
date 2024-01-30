@@ -74,5 +74,69 @@ class TestGetJson(unittest.TestCase):
             mock_response.json.assert_called_once()
 
 
+class TestGetJson(unittest.TestCase):
+    """
+    Test suite for testing the 'get_json' function.
+
+    This suite uses parameterized tests to
+    ensure 'get_json' correctly fetches and
+    returns data from different URLs.
+    It mocks external HTTP requests to avoid
+    network dependency and ensure test reliability.
+    """
+    @parameterized.expand([
+        ("http://example.com", {"payload": True}),
+        ("http://holberton.io", {"payload": False}),
+    ])
+    def test_get_json(self, url, returned_payload):
+        """
+        Test the 'get_json' function with mocked HTTP responses.
+
+        Ensures that 'get_json' returns the correct data and
+        the mocked 'json' method is called exactly once.
+        """
+        mock_response = Mock()
+        mock_response.json.return_value = returned_payload
+        with patch('requests.get', return_value=mock_response):
+            self.assertEqual(get_json(url), returned_payload)
+            mock_response.json.assert_called_once()
+
+
+class TestMemoize(unittest.TestCase):
+    """
+    Test suite for testing the 'memoize' decorator.
+
+    This suite tests the 'memoize' decorator to ensure it correctly caches
+    the results of methods it is applied to, thereby avoiding redundant
+    computations.
+    """
+    def test_memoize(self):
+        """
+        Test the 'memoize' decorator on a method.
+
+        This test creates a test class with a method and a property.
+        The property is decorated with 'memoize' to test if the result
+        is correctly memoized.
+        """
+        class TestClass:
+            """
+            Test class with a method and a memoized property for testing
+            the 'memoize' decorator.
+            """
+            def a_method(self):
+                """
+                Simple method that returns a fixed number.
+                """
+                return 42
+
+            @memoize
+            def a_property(self):
+                """
+                Property that calls 'a_method' and is decorated with 'memoize'
+                to test the memoization functionality.
+                """
+                return self.a_method()
+
+
 if __name__ == "__main__":
     unittest.main()
