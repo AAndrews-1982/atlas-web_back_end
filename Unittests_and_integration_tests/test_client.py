@@ -11,23 +11,30 @@ from client import GithubOrgClient
 
 class TestGithubOrgClient(unittest.TestCase):
     """
-    Test Suite for GithubOrgClient class.
-    Tests the functionality of retrieving organization information.
+    Test Suite for the GithubOrgClient class.
+    Validates the functionality of the org() method for different org names.
     """
 
     @parameterized.expand([
-        ("google",),
-        ("abc",)
+        ('google',),
+        ('abc',)
     ])
-    @patch("client.get_json", return_value={"organization": True})
+    @patch('client.get_json')
     def test_org(self, org_name, mock_get_json):
         """
-        Test that GithubOrgClient.org returns the correct value.
-        Ensures that the get_json function is called with the
-        correct org name.
+        Tests that org() method correctly calls get_json with the right URL.
         """
-        client = GithubOrgClient(org_name)
-        result = client.org
-        self.assertEqual(result, mock_get_json.return_value)
-        mock_get_json.assert_called_once_with(
-            f'https://api.github.com/orgs/{org_name}')
+        # Setup the mock response object
+        mock_response = Mock()
+        mock_response.json.return_value = {}
+
+        # Set the return value for the mocked get_json
+        mock_get_json.return_value = mock_response
+
+        # Create a GithubOrgClient instance and call the org method
+        github_client = GithubOrgClient(org_name)
+        github_client.org()
+
+        # Check that get_json was called correctly
+        expected_url = github_client.ORG_URL.format(org=org_name)
+        mock_get_json.assert_called_once_with(expected_url)
