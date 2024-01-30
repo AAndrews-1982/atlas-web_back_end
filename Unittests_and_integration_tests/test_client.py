@@ -11,30 +11,52 @@ from client import GithubOrgClient
 
 class TestGithubOrgClient(unittest.TestCase):
     """
-    Test Suite for the GithubOrgClient class.
-    Validates the functionality of the org() method for different org names.
+    Test Suite for GithubOrgClient class.
+    Tests the functionality of retrieving organization information.
     """
 
     @parameterized.expand([
-        ('google',),
-        ('abc',)
+        ("google",),
+        ("abc",)
     ])
-    @patch('client.get_json')
+    @patch("client.get_json", return_value={"organization": True})
     def test_org(self, org_name, mock_get_json):
         """
-        Tests that org() method correctly calls get_json with the right URL.
+        Test that GithubOrgClient.org returns the correct value.
+        Ensures that the get_json function is called with the
+        correct org name.
         """
-        # Setup the mock response object
-        mock_response = Mock()
-        mock_response.json.return_value = {}
+        client = GithubOrgClient(org_name)
+        result = client.org
+        self.assertEqual(result, mock_get_json.return_value)
+        mock_get_json.assert_called_once_with(github_client.ORG_URL.
+                                              format(org=org_name))
 
-        # Set the return value for the mocked get_json
-        mock_get_json.return_value = mock_response
 
-        # Create a GithubOrgClient instance and call the org method
-        github_client = GithubOrgClient(org_name)
-        github_client.org()
+def test_public_repos_url(self):
+    """
+    Test GithubOrgClient's _public_repos_url for correct URL retrieval.
+    """
+    with patch('client.GithubOrgClient.org',
+               new_callable=PropertyMock) as mocked_obj:
+        mocked_obj.return_value = {'repos_url': "https://testing.com"}
+        myclass = GithubOrgClient('organization')
+        self.assertEqual(myclass._public_repos_url, "https://testing.com")
 
-        # Check that get_json was called correctly
-        expected_url = github_client.ORG_URL.format(org=org_name)
-        mock_get_json.assert_called_once_with(expected_url)
+
+def test_public_repos(self):
+    """
+    Placeholder for testing public_repos method.
+    """
+    pass
+
+
+@parameterized.expand([
+    ({"license": {"key": "my_license"}}, "my_license"),
+    ({"license": {"key": "other_license"}}, "my_license")
+])
+def test_has_license(self, repo_data, expected_license):
+    """
+    Parameterized test for has_license method.
+    """
+    pass
