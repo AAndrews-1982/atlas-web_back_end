@@ -58,3 +58,41 @@ class TestGetJson(unittest.TestCase):
             result = get_json(test_url)
             self.assertEqual(result, test_payload)
             mock_response.json.assert_called_once()
+
+
+class TestMemoize(unittest.TestCase):
+    """
+    Test Suite for the Memoize decorator.
+    Validates the functionality of memoizing a method's return value.
+    """
+
+    def test_memoize(self):
+        """
+        Test for the memoize function from utils.py.
+        Ensures that it correctly memoizes the return
+        value of a property method.
+        """
+        class TestClass:
+            """
+            TestClass to be used in the memoize test.
+            Contains a method and a memoized property.
+            """
+
+            def a_method(self):
+                """
+                Returns a fixed numeric value.
+                """
+                return 42
+
+            @memoize
+            def a_property(self):
+                """
+                Returns a memoized property, calling a_method internally.
+                """
+                return self.a_method()
+
+        with patch.object(TestClass, 'a_method', return_value=42) as patched:
+            test_class = TestClass()
+            response = test_class.a_property
+            self.assertEqual(response, 42)
+            patched.assert_called_once()
