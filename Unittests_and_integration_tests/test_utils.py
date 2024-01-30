@@ -1,15 +1,22 @@
 #!/usr/bin/env python3
-"""Unittests"""
+"""
+This module contains unit tests for 'access_nested_map'
+from 'utils'. It tests various scenarios to validate
+successful and erroneous behaviors.
+"""
+
 import unittest
-from unittest import mock
-from unittest.mock import patch
 from parameterized import parameterized
-from utils import access_nested_map, get_json, memoize
+from utils import access_nested_map
 
 
 class TestAccessNestedMap(unittest.TestCase):
-    """Test Suit AccessNestedMap."""
-    """ to test the function for following inputs """
+    """
+    Test suite for 'access_nested_map' in 'utils'.
+
+    This suite tests different nested map structures and path sequences.
+    It checks successful accesses and error handling for invalid paths.
+    """
 
     @parameterized.expand([
         ({"a": 1}, ("a",), 1),
@@ -17,19 +24,24 @@ class TestAccessNestedMap(unittest.TestCase):
         ({"a": {"b": 2}}, ("a", "b"), 2),
     ])
     def test_access_nested_map(self, nested_map, path, expected_result):
-        """Method to test that the method returns what it is supposed to."""
-        self.assertEqual(access_nested_map(nested_map, path),
-                         expected_result)
+        """
+        Test 'access_nested_map' for various structures and paths.
 
-    """We use the assertRaises context manager to test that a
-    KeyError is raised for the following inputs"""
+        Asserts that the function's return matches the expected result.
+        """
+        self.assertEqual(access_nested_map(nested_map, path), expected_result)
 
     @parameterized.expand([
         ({}, ("a",), 'a'),
-        ({"a": 1}, ("a", "b"), 'b')
+        ({"a": 1}, ("a", "b"), 'b'),
     ])
-    def test_access_nested_map_exception(self, nested_map, path, expec_except):
-        """Method that test that a KeyError is raised according inputs"""
-        with self.assertRaises(KeyError) as error:
+    def test_access_nested_map_exception(self, nested_map, path, expected_key):
+        """
+        Test error handling in 'access_nested_map' with invalid paths.
+        Ensures KeyError is raised for non-existent keys in the map.
+
+        Asserts KeyError is raised with the expected key.
+        """
+        with self.assertRaises(KeyError) as raised_exception:
             access_nested_map(nested_map, path)
-            self.assertEqual(expec_except, error.exception)
+        self.assertEqual(str(expected_key), str(raised_exception.exception))
