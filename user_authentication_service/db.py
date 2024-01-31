@@ -40,10 +40,10 @@ class DB:
     def add_user(self, email: str, hashed_password: str) -> User:
         """save the user to the database
         """
-        user_to_add = User(email=email, hashed_password=hashed_password)
-        self._session.add(user_to_add)
+        user = User(email=email, hashed_password=hashed_password)
+        self._session.add(user)
         self._session.commit()
-        return user_to_add
+        return user
 
     def find_user_by(self, **keywords) -> User:
         """takes in arbitrary keyword arguments and returns
