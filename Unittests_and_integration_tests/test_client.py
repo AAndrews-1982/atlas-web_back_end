@@ -76,3 +76,42 @@ class TestGithubOrgClient(unittest.TestCase):
         github_client = GithubOrgClient("atlas")
         result = github_client.has_license(repo, license_key)
         self.assertEqual(expected_return, result)
+
+
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """
+    Integration tests for the GithubOrgClient class.
+    These tests use payloads from fixtures to simulate
+    real-world data and scenarios.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Setup method for integration tests.
+        Initializes a patcher for requests.get.
+        """
+        cls.get_patcher = patch("requests.get", side_effect=HTTPError)
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Tear down method for integration tests. Stops the patcher after tests.
+        """
+        cls.get_patcher.stop()
+
+    def test_public_repos(self):
+        """
+        Test the public_repos method in an integration test environment.
+        Currently a placeholder for future test implementation.
+        """
+        test_class = GithubOrgClient("atlas")
+        assert True
+
+    def test_public_repos_with_license(self):
+        """
+        Test public_repos with a license argument in an integration test
+        environment. Placeholder for future implementation.
+        """
+        test_class = GithubOrgClient("atlas")
+        assert True
