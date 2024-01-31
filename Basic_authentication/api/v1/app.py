@@ -31,7 +31,7 @@ elif getenv("AUTH_TYPE") == "basic_auth":
 
 
 @app.before_request
-def before_request() -> None:
+def before_request() -> str:
     """
     Function executed before each request to enforce authentication and
     authorization checks except for specific paths.
@@ -41,19 +41,22 @@ def before_request() -> None:
     authorization headers and whether the current user is accessible.
     """
     if auth is None:
-        return
+        return None
 
     # Paths that do not require authentication
-    exempt_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
-                    '/api/v1/forbidden/']
+    check_pathlist = ['/api/v1/status/', '/api/v1/unauthorized/',
+                      '/api/v1/forbidden/']
 
     # If path requires auth and either auth header or current user is missing,
     # abort the request with appropriate error code
-    if auth.require_auth(request.path, exempt_paths):
-        if auth.authorization_header(request) is None:
-            abort(401)
-        if auth.current_user(request) is None:
-            abort(403)
+    if not (auth.require_auth(request.path, check_pathlist)):
+        return
+
+    if (auth.authorization_header(request)) is None:
+        abort(401)
+
+    if (auth.current_user(request)) is None:
+        abort(403)
 
 
 @app.errorhandler(404)
