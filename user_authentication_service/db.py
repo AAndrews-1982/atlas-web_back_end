@@ -1,40 +1,54 @@
 #!/usr/bin/env python3
-"""DB module
 """
+DB module
+This module provides a class `DB` for interacting with a SQLite
+database using SQLAlchemy. It allows for creating and managing
+a database with user data.
+"""
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.exc import InvalidRequestError
-from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError
 
-from user import Base
-from user import User
-from typing import TypeVar
+# Import Base and User models for database interaction.
+from user import Base, User
 
 
 class DB:
-    """DB class
+    """
+    DB class for handling database operations.
+
+    Attributes:
+        _engine: A SQLAlchemy engine instance for database connections.
+        __session: A private SQLAlchemy session for executing
+        database operations.
     """
 
     def __init__(self) -> None:
-        """Constructor - Initialize a new DB instance
+        """
+        Initialize a new DB instance.
+        This method creates a new database engine
+        and prepares the database schema.
         """
         self._engine = create_engine("sqlite:///a.db", echo=False)
         Base.metadata.drop_all(self._engine)
+        # Drop all tables in the database.
         Base.metadata.create_all(self._engine)
+        # Create all tables in the database.
         self.__session = None
 
     @property
     def _session(self) -> Session:
-        """Add a new user to the database
-
-        Args:
-            email (str): User's email address
-            hashed_password (str): Hashed password for the user
+        """
+        Memoized session object.
+        Provides a SQLAlchemy session instance,
+        creating it if it does not exist.
 
         Returns:
-            User: The created User object
+            A SQLAlchemy session object.
         """
         if self.__session is None:
             DBSession = sessionmaker(bind=self._engine)
@@ -42,37 +56,71 @@ class DB:
         return self.__session
 
     def add_user(self, email: str, hashed_password: str) -> User:
-        """Method that save a user to the DB and returns a User object
         """
-        new_user = User(email=email, hashed_password=hashed_password)
-        self._session.add(new_user)
-        self._session.commit()
-        return new_user
+        Save the user to the database.
 
-    def find_user_by(self, **kwargs) -> User:
-        """Method that find a user in the dababase on input arguments
-         Args:
-            **kwargs: Arbitrary keyword arguments to filter the query
+        Args:
+            email (str): The email address of the user.
+            hashed_password (str): The hashed password of the user.
+
         Returns:
-            User: The first user found matching the query
-        Raises:
-            NoResultFound: If no results are found
-            InvalidRequestError: If wrong query arguments are passed
+            User: The User object that was added to the database.
         """
-        if not kwargs:
-            raise InvalidRequestError
-        user = self._session.query(User).filter_by(**kwargs).first()
-        if user is None:
-            raise NoResultFound
-        return user
-
-    def update_user(self, user_id: int, **kwargs) -> None:
-        """Update a user in the database based on user_id and input arguments
-        and save it into the database"""
-        user = self.find_user_by(id=user_id)
-        for key, value in kwargs.items():
-            if hasattr(user, key):
-                setattr(user, key, value)
-            else:
-                raise ValueError
+        user_to_add = User(email=email, hashed_password=hashed_password)
+        self._session.add(user_to_add)
         self._session.commit()
+        return user_to_add
+
+    def find_user_by(self, **keywords) -> User:
+        """
+        Takes in arbitrary keyword arguments and returns the
+        first row found in the users table as filtered
+        by the methods input arguments.
+
+        Args:
+            **keywords: Arbitrary number of keyword arguments.
+
+        Returns:
+            User: The first User object that matches
+            the given criteria.
+
+        Raises:
+            NoResultFound: If no results are found in the query.
+        """
+        try:
+            user = self.__session.query(User).filter_by(**keywords).first()
+            if user is None:
+                raise NoResultFound
+            return user
+        except InvalidRequestError:
+            raise
+
+    def update_user(self, user_id: int, **keywords) -> None:
+        """
+        Update the attributes of a user.
+
+        Use find_user_by to locate the user to update, then update
+        the users attributes as passed in the methods arguments
+        then commit changes to the database.
+
+        Args:
+            user_id (int): The ID of the user to update.
+            **keywords: Arbitrary number of keyword arguments
+            representing the attributes to update.
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: If a provided attribute key does not
+            exist in the User model.
+        """
+        user = self.find_user_by(id=user_id)
+
+        for key, value in keywords.items():
+            if not hasattr(user, key):
+                raise ValueError
+            setattr(user, key, value)
+
+        self._session.commit()
+        return None
