@@ -4,9 +4,11 @@ Unit tests for GithubOrgClient in client module.
 """
 
 import unittest
-from unittest.mock import patch
-from parameterized import parameterized
+from unittest.mock import patch, PropertyMock, Mock
+from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
+from fixtures import TEST_PAYLOAD
+from urllib.error import HTTPError
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -66,3 +68,11 @@ class TestGithubOrgClient(unittest.TestCase):
         ({"license": {"key": "my_license"}}, "my_license", True),
         ({"license": {"key": "other_license"}}, "my_license", False),
     ])
+    def test_has_license(self, repo, license_key, expected_return):
+        """
+        Test the has_license method. Validates if repositories have the
+        specified license. Uses different license scenarios.
+        """
+        github_client = GithubOrgClient("atlas")
+        result = github_client.has_license(repo, license_key)
+        self.assertEqual(expected_return, result)
