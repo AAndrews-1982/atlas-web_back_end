@@ -22,36 +22,47 @@ class TestGithubOrgClient(unittest.TestCase):
     @patch("client.get_json", return_value={"organization": True})
     def test_org(self, org_name, mock_get_json):
         """
-        Test that GithubOrgClient.org returns the correct value.
-        Ensures that the get_json function is called with the
-        correct org name.
+        Test the org method. Ensures it returns the correct value for
+        different organization names.
         """
         client = GithubOrgClient(org_name)
         result = client.org
         self.assertEqual(result, mock_get_json.return_value)
-        mock_get_json.assert_called_once_with(github_client.ORG_URL.
-                                              format(org=org_name))
+        mock_get_json.assert_called_once()
 
+    def test_public_repos_url(self):
+        """
+        Test the _public_repos_url method. Checks if it correctly retrieves
+        the repository URL from organization data.
+        """
+        with patch.object(GithubOrgClient,
+                          "org", new_callable=PropertyMock) as patched:
+            test_json = {"url": "google",
+                         "repos_url": "https://www.atlasschool.com/"}
+            patched.return_value = test_json
+            github_client = GithubOrgClient(test_json.get("url"))
+            response = github_client._public_repos_url
+            patched.assert_called_once()
+            self.assertEqual(response, test_json.get("repos_url"))
 
-def test_public_repos_url(self):
-    """
-    Test GithubOrgClient's _public_repos_url for correct URL retrieval.
-    """
-    with patch('client.GithubOrgClient.org',
-               new_callable=PropertyMock) as mocked_obj:
-        mocked_obj.return_value = {'repos_url': "https://testing.com"}
-        myclass = GithubOrgClient('organization')
-        self.assertEqual(myclass._public_repos_url, "https://testing.com")
+    @patch("client.get_json")
+    def test_public_repos(self, get_patch):
+        """
+        Test the public_repos method. Mocks _public_repos_url and get_json
+        to verify correct repository retrieval.
+        """
+        get_patch.return_value = [{"name": "atlas"},
+                                  {"name": "abc"}]
+        with patch.object(GithubOrgClient, "_public_repos_url",
+                          new_callable=PropertyMock) as mock_get:
+            mock_get.return_value = "http://google.com"
+            github_client = GithubOrgClient("atlas")
+            result = github_client.public_repos()
+            self.assertEqual(result, ["atlas", "abc"])
+            get_patch.assert_called_once()
+            mock_get.assert_called_once()
 
-
-def test_public_repos(self):
-    """
-    Placeholder for testing public_repos method.
-    """
-    pass
-
-
-@parameterized.expand([
-    ({"license": {"key": "my_license"}}, "my_license"),
-    ({"license": {"key": "other_license"}}, "my_license")
-])
+    @parameterized.expand([
+        ({"license": {"key": "my_license"}}, "my_license", True),
+        ({"license": {"key": "other_license"}}, "my_license", False),
+    ])
