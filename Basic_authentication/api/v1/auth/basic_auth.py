@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""
-Module: Basic Authentication
-This module contains the BasicAuth class which
-inherits from the Auth class.
-It provides mechanisms for handling basic HTTP
-authentication using Base64 encoding.
+""" task. BasicAuth Class
 """
 from api.v1.auth.auth import Auth
 from base64 import b64decode, binascii
@@ -13,25 +8,11 @@ from typing import TypeVar
 
 
 class BasicAuth(Auth):
-    """
-    Basic Authentication class.
-
-    This class implements basic authentication methods.
-    It extends the Auth class by adding specific methods
-    for basic authentication, such as extracting and decoding
-    Base64-encoded credentials from the Authorization header
-    in HTTP requests.
-    """
+    """ BasicAuthenticacion class """
     def extract_base64_authorization_header(self,
                                             authorization_header: str) -> str:
-        """
-        Extracts the Base64 encoded part of the Authorization header.
-
-        This method is responsible for isolating the Base64
-        encoded portion of the Authorization header,
-        which is expected to follow the format "Basic <encoded_string>".
-        """
-
+        """Extract_base65 returns the Base64 part of the Authorization
+        header for a Basic Authentication:"""
         if authorization_header is None:
             return None
         if type(authorization_header) is not str:
@@ -42,12 +23,7 @@ class BasicAuth(Auth):
 
     def decode_base64_authorization_header(
             self, base64_authorization_header: str) -> str:
-        """
-        Decodes a Base64 encoded string.
-
-        This method takes a Base64 encoded string and attempts to decode it.
-        It is designed to handle the Base64 part of an authorization header.
-        """
+        """method that returns the decoded value of a Base64 string"""
         if base64_authorization_header is None:
             return None
         if type(base64_authorization_header) is not str:
@@ -62,13 +38,8 @@ class BasicAuth(Auth):
 
     def extract_user_credentials(
             self, decoded_base64_authorization_header: str) -> (str, str):
-        """
-        Extracts user email and password from a decoded Base64 string.
-
-        This method is intended to parse the decoded
-        Base64 string to extract the user's email and
-        password, which are expected to be separated by a colon.
-        """
+        """method that returns the user email and password
+        from the Base64 decoded value"""
         if (
             decoded_base64_authorization_header is None or not
             isinstance(decoded_base64_authorization_header, str)
@@ -83,14 +54,7 @@ class BasicAuth(Auth):
 
     def user_object_from_credentials(
             self, user_email: str, user_pwd: str) -> TypeVar('User'):
-        """
-        Retrieves a User instance based on provided email and password.
-
-        This method uses the provided email and password to
-        search for and authenticate a User. If a User with the given
-        email exists and the password is correct, the
-        corresponding User object is returned.
-        """
+        """Method that return the User instance based on email and password"""
         if user_email is None or not isinstance(user_email, str):
             return None
 
@@ -110,15 +74,8 @@ class BasicAuth(Auth):
         return user_instance
 
     def current_user(self, request=None) -> TypeVar('User'):
-        """Overloads Auth's current_user method to retrieve the
-            User instance for a request.
-            This method is the entry point for authenticating
-            a user based on the
-            information available in the HTTP request. It processes
-            the request's authorization header to extract, decode,
-            and validate user credentials,
-            ultimately retrieving the corresponding User object.
-        """
+        """Method that overloads Auth and retrieves the User
+        instance for a request"""
         if request is None:
             request = request
 
