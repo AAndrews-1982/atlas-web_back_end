@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 """
-This Auth module handles authentication for the API. It includes methods for
-determining if a path requires authentication, extracting the Authorization
-header, and identifying the current user based on the request.
+This module defines a class for managing authentication within an API,
+including methods for determining if a request requires authentication,
+retrieving the authorization header, and identifying the current user.
 """
 
 from flask import request
 from typing import List, TypeVar
 
+User = TypeVar('User')  # Define a generic type for User
 
-class Auth:
+
+class Auth():
     """
-    The Auth class manages API authentication processes.
-    It contains methods for path authentication requirement checks,
-    Authorization header extraction, and current user identification.
+    A class to manage API authentication processes, including verifying
+    if certain paths require authentication, extracting authorization
+    headers, and identifying the current user based on the request.
     """
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
@@ -21,46 +23,43 @@ class Auth:
         Determines if the given path requires authentication.
 
         Args:
-            path (str): The path to check against excluded paths.
-            excluded_paths (List[str]): List of paths that
-            don't require auth.
+            path: The path of the request.
+            excluded_paths: A list of paths that do not require authentication.
 
         Returns:
-            bool: True if path requires authentication, False otherwise.
+            True if the path requires authentication, False otherwise.
         """
-        if path is None or excluded_paths is None or len(excluded_paths) == 0:
+        if path is None or not excluded_paths:
             return True
-
-        # Normalize paths to ensure consistent comparison
-        normalized_excluded = [
-            p[:-1] if p.endswith('/') else p for p in excluded_paths]
-        normalized_path = path[:-1] if path.endswith('/') else path
-
-        return normalized_path not in normalized_excluded
+        # Ensure path format is consistent by appending '/' if absent
+        normalized_path = path if path.endswith('/') else path + '/'
+        # Path is not required to authenticate if it's in the excluded_paths
+        return not any(ep.endswith('/') and normalized_path.startswith(ep)
+                       for ep in excluded_paths)
 
     def authorization_header(self, request=None) -> str:
         """
-        Extracts the Authorization header from a request.
+        Retrieves the Authorization header from the request.
 
         Args:
             request: The Flask request object.
 
         Returns:
-            str: The value of the Authorization header, or None if absent.
+            The value of the Authorization header, or None if not present.
         """
-        if request is None:
-            return None
-        return request.headers.get('Authorization', None)
+        if request and 'Authorization' in request.headers:
+            return request.headers.get('Authorization')
+        return None
 
     def current_user(self, request=None) -> TypeVar('User'):
         """
-        Placeholder for current user identification (to be implemented).
+        Placeholder method for obtaining the current user.
 
         Args:
             request: The Flask request object.
 
         Returns:
-            TypeVar('User'): The current user object,
-            or None if not implemented.
+            Currently, this method returns None. It should be overridden
+            to provide actual user identification based on the request.
         """
         return None
