@@ -1,114 +1,130 @@
 #!/usr/bin/env python3
 """
-This BasicAuth module is designed for handling basic HTTP authentication
-in a Flask application. It extends the functionalities of the Auth class
-to support authentication using Base64 encoded credentials.
+This module defines the BasicAuth class, extending the Auth class for handling
+Basic Authentication in a Flask application. It includes methods for extracting
+and decoding Base64 encoded credentials from the Authorization header, and
+retrieving the corresponding user object.
 """
+
 from api.v1.auth.auth import Auth
+from base64 import b64decode, binascii
 from models.user import User
 from typing import TypeVar
-import base64
+
+UserType = TypeVar('User')  # Generic type for user objects
 
 
 class BasicAuth(Auth):
     """
-    BasicAuth class for basic HTTP authentication.
-    Inherits from Auth and implements methods for handling
-    basic authentication mechanisms.
+    BasicAuth class for handling Basic Authentication.
+
+    This class provides methods to extract and decode Base64 encoded
+    credentials from the Authorization header and to retrieve the user
+    object associated with these credentials.
     """
 
     def extract_base64_authorization_header(
             self, authorization_header: str) -> str:
         """
-        Extracts the Base64 encoded part from the Authorization header.
-        """
-        if authorization_header is None or \
-           not isinstance(authorization_header, str) or \
-           not authorization_header.startswith('Basic '):
-            return None
+        Extracts the Base64 part of the Authorization header for Basic
+        Authentication.
 
-        return authorization_header.split(' ')[1]
+        Args:
+            authorization_header: The complete Authorization header value.
+
+        Returns:
+            The Base64 encoded portion of the Authorization header, or None
+            if the header is not a valid Basic Authentication header.
+        """
+        if authorization_header is None:
+            return None
+        if type(authorization_header) is not str:
+            return None
+        if authorization_header[0:6] != 'Basic ':
+            return None
+        return authorization_header[6:]
 
     def decode_base64_authorization_header(
             self, base64_authorization_header: str) -> str:
         """
-        Decodes the Base64 encoded part of the Authorization header.
+        Decodes the Base64 encoded string from the Authorization header.
+
+        Args:
+            base64_authorization_header: The Base64 encoded credentials.
+
+        Returns:
+            The decoded string (typically 'username:password'), or None if
+            the string cannot be decoded.
         """
-        if base64_authorization_header is None or \
-           not isinstance(base64_authorization_header, str):
+        if base64_authorization_header is None:
             return None
 
         try:
-            base64_bytes = base64_authorization_header.encode('utf-8')
-            decoded_bytes = base64.b64decode(base64_bytes)
-            return decoded_bytes.decode('utf-8')
-        except (ValueError, TypeError, base64.binascii.Error):
+            decoded_bytes = b64decode(base64_authorization_header)
+        except binascii.Error:
             return None
+
+        return decoded_bytes.decode("utf-8")
 
     def extract_user_credentials(
-        self,
-        decoded_base64_authorization_header: str
-    ) -> (str, str):
+            self, decoded_base64_authorization_header: str) -> (str, str):
         """
-        Extracts the user email and password from the Base64 decoded value.
+        Extracts the user email and password from the decoded Base64 string.
+
+        Args:
+            decoded_base64_authorization_header: The decoded credentials
+            string.
+
+        Returns:
+            A tuple containing the user email and password, or (None, None) if
+            the credentials cannot be extracted.
         """
-        if decoded_base64_authorization_header is None or \
-           not isinstance(decoded_base64_authorization_header, str):
+        if decoded_base64_authorization_header is None:
             return None, None
 
-        if ':' not in decoded_base64_authorization_header:
-            return None, None
-
-        credentials = decoded_base64_authorization_header.split(':', 1)
-        return credentials[0], credentials[1]
+        return decoded_base64_authorization_header.split(':', 1)
 
     def user_object_from_credentials(
-            self, user_email: str, user_pwd: str) -> TypeVar('User'):
+            self, user_email: str, user_pwd: str) -> UserType:
         """
-        Retrieves a User instance based on email and password.
+        Retrieves the User instance based on provided email and password.
 
-        This method validates the user's credentials against stored data.
-        It first checks if the email and password are valid strings. Then, it
-        looks up the user in the database by email. If the user is found, it
-        verifies the password. If the credentials are valid, it returns the
-        User instance; otherwise, it returns None.
+        Args:
+            user_email: The email of the user.
+            user_pwd: The password of the user.
+
+        Returns:
+            The User instance if credentials are valid and user exists, None
+            otherwise.
         """
-        if user_email is None or not isinstance(user_email, str):
-            return None
-        if user_pwd is None or not isinstance(user_pwd, str):
+        if user_email is None or user_pwd is None:
             return None
 
         users = User.search({'email': user_email})
-        if not users:
+        if not users or not users[0].is_valid_password(user_pwd):
             return None
 
-        user = users[0]
-        if not user.is_valid_password(user_pwd):
+        return users[0]
+
+    def current_user(self, request=None) -> UserType:
+        """
+        Overloads Auth's current_user method to retrieve the User instance
+        for a request using Basic Authentication.
+
+        Args:
+            request: The Flask request object.
+
+        Returns:
+            The User instance if the request contains valid credentials, None
+            otherwise.
+        """
+        if request is None:
             return None
 
-        return user
+        auth_header = self.authorization_header(request)
+        decoded_header = self.decode_base64_authorization_header(
+            self.extract_base64_authorization_header(auth_header)
+        )
+        user_email, user_pwd = self.extract_user_credentials(decoded_header)
 
-
-def current_user(self, request=None) -> TypeVar('User'):
-    """
-    Retrieves the User instance associated with the given request.
-
-    This method overloads Auth and is used to identify
-    the user making a request.
-
-    Note:
-        The method assumes that the authorization header contains credentials
-        in a specific format (e.g., Base64 encoded) and relies on other helper
-        methods (`authorization_header`, `extract_base64_authorization_header`,
-        `decode_base64_authorization_header`, `extract_user_credentials`, and
-        `user_object_from_credentials`) to process this information.
-    """
-    if request is None:
-        return None
-    authorized_header = self.authorization_header(request)
-    b64_head = self.extract_base64_authorization_header(authorized_header)
-    dc_head = self.decode_base64_authorization_header(b64_head)
-    user_email, user_pwd = self.extract_user_credentials(dc_head)
-    user = self.user_object_from_credentials(user_email, user_pwd)
-
-    return user
+        return self.user_object_from_credentials(user_email, user_pwd)
