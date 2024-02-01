@@ -5,12 +5,14 @@
 from flask import Flask
 from flask_babel import Babel
 
+
 # Configuration class
 class Config:
     """ Configuration for the Flask app """
     LANGUAGES = ['en', 'fr']
     BABEL_DEFAULT_LOCALE = 'en'
     BABEL_DEFAULT_TIMEZONE = 'UTC'
+
 
 # Initialize Flask application
 web_app = Flask(__name__)
