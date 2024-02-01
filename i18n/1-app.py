@@ -27,7 +27,7 @@ babel = Babel(web_app)
 @web_app.route('/')
 def home_page():
     """ Render the home page template """
-    # Your routing and view logic here
+    return render_template('./1-index.html')
 
 
 if __name__ == "__main__":
