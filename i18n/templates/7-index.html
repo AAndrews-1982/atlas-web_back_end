@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="{{ g.locale }}" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ _('home_title') }}</title>
+</head>
+<body>
+    <h1>{{ _('home_header') }}</h1>
+    {% if g.user %}
+    <p>{{ _('logged_in_as', username=g.user['name']) }}</p>
+    <p>Time Zone: <span id="timezone"></span></p> <!-- Add this line to display the time zone -->
+    {% else %}
+    <p>{{ _('not_logged_in') }}</p>
+    {% endif %}
+    <script>
+        // JS to update the time zone on the webpage
+        document.getElementById('timezone').innerText = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    </script>
+</body>
+</html>
