@@ -1,47 +1,33 @@
 #!/usr/bin/env python3
 """
-Module for defining the User model for user authentication service.
-
-This module defines the User model used in the user authentication service,
-including attributes for user identification and authentication.
+This module defines the User model, which represents
+a user in the database. It creates a table named 'users'
+with various fields to store user information.
 """
 
-from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String
 
+# Base class for our class definitions
 Base = declarative_base()
 
 
 class User(Base):
     """
-    User model for storing user details.
+    A SQLAlchemy model named 'User'.
 
-    Attributes:
-        id (int): Unique identifier for the user, serves as the primary key.
-        email (str): Email address of the user, cannot be null.
-        hashed_password (str): Hashed password for the user, cannot be null.
-        session_id (str): Session ID for the user, can be null.
-        reset_token (str): Token used for resetting the
-        user's password, can be null.
+    This class represents a table named 'users' in the database.
+    It is used to store user-related data.
     """
-
     __tablename__ = 'users'
 
+    # Unique identifier for each user
     id = Column(Integer, primary_key=True)
+    # User's email address
     email = Column(String(250), nullable=False)
+    # User's hashed password
     hashed_password = Column(String(250), nullable=False)
+    # Session ID for the user (can be null)
     session_id = Column(String(250), nullable=True)
+    # Token for resetting password (can be null)
     reset_token = Column(String(250), nullable=True)
-
-class User:
-    def __init__(self, **kwargs):
-        """ Initialize a User instance with keyword arguments.
-
-        Args:
-            kwargs: Keyword arguments for user attributes. Expected keys are
-                    'email', 'hashed_password', 'session_id', and 'reset_token'.
-        """
-        self.email = kwargs.get('email')
-        self.hashed_password = kwargs.get('hashed_password')
-        self.session_id = kwargs.get('session_id')
-        self.reset_token = kwargs.get('reset_token')
