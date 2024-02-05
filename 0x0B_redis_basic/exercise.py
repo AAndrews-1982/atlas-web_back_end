@@ -6,6 +6,24 @@ This module defines a Cache class for storing data in Redis with random keys.
 import redis
 import uuid
 from typing import Union, Callable, Optional
+from functools import wraps
+
+
+def count_calls(method: Callable) -> Callable:
+    """
+    Decorator that counts how many times a method is called.
+    Uses the method's qualified name as a key in Redis to store the count.
+    """
+    @wraps(method)
+    def wrapper(self, *args, **kwds):
+        """
+        Increments the count for the method's qualified name every time
+        the method is called and returns the value returned by the method.
+        """
+        key = f"count:{method.__qualname__}"
+        self._redis.incr(key)
+        return method(self, *args, **kwds)
+    return wrapper
 
 
 class Cache:
@@ -51,17 +69,6 @@ class Cache:
     def get_int(self, key: str) -> Optional[int]:
         """Get value as integer."""
         return self.get(key, fn=int)
-
-    def count_calls(method: Callable) -> Callable:
-        """
-        Decorator that counts how many times a method is called.
-        """
-    @functools.wraps(method)
-    def wrapper(self, *args, **kwargs):
-        key = f"count:{method.__qualname__}"
-        self._redis.incr(key)
-        return method(self, *args, **kwargs)
-    return wrapper
 
 
 # Test the Cache class with conversion functions
