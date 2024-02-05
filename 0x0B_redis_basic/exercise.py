@@ -26,6 +26,34 @@ def count_calls(method: Callable) -> Callable:
     return wrapper
 
 
+def call_history(method: Callable) -> Callable:
+    """
+    Decorator to store the history of inputs and outputs for a method.
+    Uses Redis lists to store the arguments (inputs) and results (outputs).
+    """
+    inputs_key = f"{method.__qualname__}:inputs"
+    outputs_key = f"{method.__qualname__}:outputs"
+
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """
+        Stores method arguments and output in Redis and returns the output.
+        """
+        # Serialize arguments to a JSON string for storage
+        args_json = json.dumps(args)
+        kwargs_json = json.dumps(kwargs)
+        self._redis.rpush(inputs_key, args_json)
+        self._redis.rpush(inputs_key, kwargs_json)
+
+        # Call the original method and store its result
+        result = method(self, *args, **kwargs)
+        result_json = json.dumps(result)
+        self._redis.rpush(outputs_key, result_json)
+
+        return result
+    return wrapper
+
+
 class Cache:
     """
     A Cache class to store data in Redis using randomly generated keys.
