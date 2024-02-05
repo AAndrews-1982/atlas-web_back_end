@@ -65,6 +65,8 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()  # Clean start
 
+
+    @count_calls # Decorater
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Store data in Redis under a random key.
