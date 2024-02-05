@@ -5,7 +5,7 @@ This module defines a Cache class for storing data in Redis with random keys.
 
 import redis
 import uuid
-from typing import Union
+from typing import Union, Callable, Optional
 
 
 class Cache:
