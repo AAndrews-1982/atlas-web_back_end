@@ -33,9 +33,38 @@ class Cache:
         self._redis.set(name=key, value=data)
         return key
 
+    def get(self, key: str,
+            fn: Optional[Callable[[bytes], Union[str, int]]] = None
+            ) -> Optional[Union[str, bytes, int]]:
+        """
+        Retrieve data by key, optionally converting it.
+        """
+        value = self._redis.get(key)
+        if value is not None and fn is not None:
+            return fn(value)
+        return value
 
-# Example of using the Cache class
+    def get_str(self, key: str) -> Optional[str]:
+        """Get value as UTF-8 string."""
+        return self.get(key, fn=lambda x: x.decode('utf-8'))
+
+    def get_int(self, key: str) -> Optional[int]:
+        """Get value as integer."""
+        return self.get(key, fn=int)
+
+
+# Test the Cache class with conversion functions
 if __name__ == "__main__":
     cache = Cache()
-    key = cache.store("Hello, Redis!")
-    print(f"Data stored under key: {key}")
+
+    TEST_CASES = {
+        b"foo": None,
+        123: int,
+        "bar": lambda d: d.decode("utf-8")
+    }
+
+    for value, fn in TEST_CASES.items():
+        key = cache.store(value)
+        assert cache.get(key, fn=fn) == value, "Assertion failed"
+
+    print("All tests passed.")
