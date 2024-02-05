@@ -52,10 +52,23 @@ class Cache:
         """Get value as integer."""
         return self.get(key, fn=int)
 
+    def count_calls(method: Callable) -> Callable:
+        """
+        Decorator that counts how many times a method is called.
+        """
+    @functools.wraps(method)
+    def wrapper(self, *args, **kwargs):
+        key = f"count:{method.__qualname__}"
+        self._redis.incr(key)
+        return method(self, *args, **kwargs)
+    return wrapper
+
 
 # Test the Cache class with conversion functions
 if __name__ == "__main__":
     cache = Cache()
+    cache.store("Hello, Redis!")
+    cache.store("Another value")
 
     TEST_CASES = {
         b"foo": None,
