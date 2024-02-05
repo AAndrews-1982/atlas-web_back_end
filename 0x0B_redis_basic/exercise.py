@@ -20,7 +20,7 @@ def count_calls(method: Callable) -> Callable:
         Increments the count for the method's qualified name every time
         the method is called and returns the value returned by the method.
         """
-        self._redis.incr(key)
+        self._redis.incr(method.__qualname__)
         return method(self, *args, **kwds)
     return wrapper
 
