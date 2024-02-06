@@ -53,6 +53,41 @@ def call_history(method: Callable) -> Callable:
     return wrapper
 
 
+def replay(method: Callable):
+    """
+    Display the history of calls of a particular function.
+
+    This function retrieves and prints the call count along
+    with the input arguments and output results for each call
+    to the given method. It uses Redis to fetch the stored history
+    identified by the method's qualified name.
+
+    Parameters:
+    - method (Callable): The method whose call history is to be displayed.
+
+    Outputs:
+    - Prints the number of times the method was called and the details
+      (input arguments and output results) of each call.
+    """
+    key = method.__qualname__
+    input_key = f"{key}:inputs"
+    output_key = f"{key}:outputs"
+
+    redis = method.__self__._redis  # Access the Redis client instance
+    counts = redis.get(key).decode("utf-8")
+    print(f"{key} was called {counts} times:")
+
+    # Retrieve the list of inputs and outputs from Redis
+    list_in = redis.lrange(input_key, 0, -1)
+    list_out = redis.lrange(output_key, 0, -1)
+
+    # Zip the input and output lists for paired iteration
+    zip_list = list(zip(list_in, list_out))
+    for a, b in zip_list:
+        attr, routput = a.decode("utf-8"), b.decode("utf-8")
+        print(f"{key}(*{attr}) -> {routput}")
+
+
 class Cache:
     """
     A Cache class to store data in Redis using randomly generated keys.
