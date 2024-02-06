@@ -18,6 +18,6 @@ BEGIN
     
     -- Insert the bonus for the specified user and project
     INSERT INTO corrections(user_id, project_id, score) VALUES(user_id, project_id, score);
-END$$
+END;//
 
 DELIMITER ;
