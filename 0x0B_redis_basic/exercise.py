@@ -64,6 +64,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()  # Clean start
 
+    @call_history  # Decorater
     @count_calls  # Decorater
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
