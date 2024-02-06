@@ -2,7 +2,7 @@
 -- prior to confirming a new order entry
 DELIMITER //
 
-CREATE TRIGGER update_item_stock
+CREATE TRIGGER decrease_quantity_item
 BEFORE INSERT ON orders
 FOR EACH ROW
 BEGIN
