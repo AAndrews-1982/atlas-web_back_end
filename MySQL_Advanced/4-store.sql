@@ -8,8 +8,8 @@ FOR EACH ROW
 BEGIN
     -- Deduct the ordered amount from the item's stock
     UPDATE items
-    SET quantity = quantity - NEW.ordered_quantity
-    WHERE item_identifier = NEW.item_id;
+    SET quantity = quantity - NEW.number
+    WHERE name = NEW.item_name;
 END;
 //
 DELIMITER ;
