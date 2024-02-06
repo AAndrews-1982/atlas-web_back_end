@@ -2,7 +2,7 @@
 SELECT 
     band_name,
     -- Calculate lifespan using the current year if 'split' is NULL
-    IFNULL(split, YEAR(2024())) - formed AS lifespan
+    IFNULL(split, 2024) - formed AS lifespan
 FROM 
     metal_bands 
 WHERE 
