@@ -42,12 +42,12 @@ def call_history(method: Callable) -> Callable:
         args_json = json.dumps(args)
         kwargs_json = json.dumps(kwargs)
         self._redis.rpush(inputs_key, args_json)
-        self._redis.rpush(inputs_key, kwargs_json)
+        # Convert args to string and store in Redis
+        self._redis.rpush(inputs_key, str(args))
 
-        # Call the original method and store its result
-        result = method(self, *args, **kwargs)
-        result_json = json.dumps(result)
-        self._redis.rpush(outputs_key, result_json)
+        # Execute the method and store its output
+        result = method(self, *args)
+        self._redis.rpush(outputs_key, str(result))
 
         return result
     return wrapper
@@ -57,7 +57,6 @@ class Cache:
     """
     A Cache class to store data in Redis using randomly generated keys.
     """
-
     def __init__(self) -> None:
         """
         Initialize the Redis client and flush the database.
@@ -65,8 +64,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()  # Clean start
 
-
-    @count_calls # Decorater
+    @count_calls  # Decorater
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """
         Store data in Redis under a random key.
@@ -74,6 +72,7 @@ class Cache:
         :param data: Data to store (str, bytes, int, float).
         :return: The random key for the data.
         """
+
         # Generate a unique key
         key = str(uuid.uuid4())
         # Store data with the generated key
