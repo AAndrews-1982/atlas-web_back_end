@@ -11,7 +11,7 @@ BEGIN
     SET average_score = (
         SELECT AVG(score) 
         FROM corrections 
-        WHERE user_id = user_id
+        WHERE user.user_id = user_id
     )
     WHERE id = user_id;
 END;
