@@ -1,18 +1,15 @@
--- Trigger Name: AfterOrderInsert
--- Description: Decreases the quantity of an item in the 'items' table after a new order is inserted into the 'orders' table.
--- Context: This trigger ensures data consistency by automatically updating the items' quantity,
--- mitigating issues caused by network disconnections, crashes, etc.
+-- Establish a trigger to adjust item quantities
+-- prior to confirming a new order entry
+DELIMITER //
 
-DELIMITER $$
-
-CREATE TRIGGER AfterOrderInsert
-AFTER INSERT ON orders
+CREATE TRIGGER update_item_stock
+BEFORE INSERT ON orders
 FOR EACH ROW
 BEGIN
-    -- Decrease the quantity of the ordered item in the items table
+    -- Deduct the ordered amount from the item's stock
     UPDATE items
-    SET quantity = quantity - NEW.quantity_ordered
-    WHERE item_id = NEW.item_id;
-END$$
-
+    SET quantity = quantity - NEW.ordered_quantity
+    WHERE item_identifier = NEW.item_id;
+END;
+//
 DELIMITER ;
