@@ -1,14 +1,11 @@
 -- List all bands with 'Glam rock' as their main style, ranked by their longevity
 SELECT 
-    band_name, 
-    CASE 
-        -- Handle cases where a band is still active or split year is given
-        WHEN split = '0' OR split = '9999' OR split IS NULL THEN YEAR(CURDATE()) - formed
-        ELSE split - formed 
-    END AS lifespan
+    band_name,
+    -- Calculate lifespan using the current year if 'split' is NULL
+    IFNULL(split, YEAR(CURDATE())) - formed AS lifespan
 FROM 
-    metal_bands
+    metal_bands 
 WHERE 
-    main_style = 'Glam rock'
+    style LIKE '%Glam rock%' -- Adjusted to ensure it captures any variations in style naming
 ORDER BY 
     lifespan DESC;
