@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-This module defines a Cache class for storing data in Redis with random keys.
+Manages data storage in Redis with unique keys for each entry.
 """
 
 import redis
@@ -78,6 +78,9 @@ class Cache:
     @call_history
     @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
+        """
+         Saves data in Redis and assigns it a unique key..
+        """
         key = str(uuid.uuid4())
         self._redis.set(name=key, value=data)
         return key
@@ -85,13 +88,22 @@ class Cache:
     def get(self, key: str,
             fn: Optional[Callable[[bytes], Union[str, int]]] = None
             ) -> Optional[Union[str, bytes, int]]:
+        """
+        Retrieves data from Redis by key and optionally transforms it.
+        """
         value = self._redis.get(key)
         if value is not None and fn is not None:
             return fn(value)
         return value
 
     def get_str(self, key: str) -> Optional[str]:
+        """
+        Retrieves a string value from Redis by key.
+        """
         return self.get(key, fn=lambda x: x.decode('utf-8'))
 
     def get_int(self, key: str) -> Optional[int]:
+        """
+        Retrieves an integer value from Redis by key.
+        """
         return self.get(key, fn=int)
