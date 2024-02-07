@@ -1,4 +1,3 @@
--- TASK7: Enhance the stored procedure to compute and store the average score for a student.
 -- The procedure handles decimal values for precise average score calculations.
 DELIMITER //
 
