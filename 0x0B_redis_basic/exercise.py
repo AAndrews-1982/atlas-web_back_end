@@ -5,6 +5,7 @@ This module defines a Cache class for storing data in Redis with random keys.
 
 import redis
 import uuid
+import json
 from typing import Union, Callable, Optional
 from functools import wraps
 
@@ -38,15 +39,8 @@ def call_history(method: Callable) -> Callable:
         """
         Stores method arguments and output in Redis and returns the output.
         """
-        # Serialize arguments to a JSON string for storage
-        args_json = json.dumps(args)
-        kwargs_json = json.dumps(kwargs)
-        self._redis.rpush(inputs_key, args_json)
-        # Convert args to string and store in Redis
         self._redis.rpush(inputs_key, str(args))
-
-        # Execute the method and store its output
-        result = method(self, *args)
+        result = method(self, *args, **kwargs)
         self._redis.rpush(outputs_key, str(result))
 
         return result
@@ -56,32 +50,17 @@ def call_history(method: Callable) -> Callable:
 def replay(method: Callable):
     """
     Display the history of calls of a particular function.
-
-    This function retrieves and prints the call count along
-    with the input arguments and output results for each call
-    to the given method. It uses Redis to fetch the stored history
-    identified by the method's qualified name.
-
-    Parameters:
-    - method (Callable): The method whose call history is to be displayed.
-
-    Outputs:
-    - Prints the number of times the method was called and the details
-      (input arguments and output results) of each call.
     """
     key = method.__qualname__
     input_key = f"{key}:inputs"
     output_key = f"{key}:outputs"
 
-    redis = method.__self__._redis  # Access the Redis client instance
+    redis = method.__self__._redis
     counts = redis.get(key).decode("utf-8")
     print(f"{key} was called {counts} times:")
 
-    # Retrieve the list of inputs and outputs from Redis
     list_in = redis.lrange(input_key, 0, -1)
     list_out = redis.lrange(output_key, 0, -1)
-
-    # Zip the input and output lists for paired iteration
     zip_list = list(zip(list_in, list_out))
     for a, b in zip_list:
         attr, routput = a.decode("utf-8"), b.decode("utf-8")
@@ -93,62 +72,26 @@ class Cache:
     A Cache class to store data in Redis using randomly generated keys.
     """
     def __init__(self) -> None:
-        """
-        Initialize the Redis client and flush the database.
-        """
         self._redis = redis.Redis()
-        self._redis.flushdb()  # Clean start
+        self._redis.flushdb()
 
-    @call_history  # Decorater
-    @count_calls  # Decorater
+    @call_history
+    @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
-        """
-        Store data in Redis under a random key.
-
-        :param data: Data to store (str, bytes, int, float).
-        :return: The random key for the data.
-        """
-
-        # Generate a unique key
         key = str(uuid.uuid4())
-        # Store data with the generated key
         self._redis.set(name=key, value=data)
         return key
 
     def get(self, key: str,
             fn: Optional[Callable[[bytes], Union[str, int]]] = None
             ) -> Optional[Union[str, bytes, int]]:
-        """
-        Retrieve data by key, optionally converting it.
-        """
         value = self._redis.get(key)
         if value is not None and fn is not None:
             return fn(value)
         return value
 
     def get_str(self, key: str) -> Optional[str]:
-        """Get value as UTF-8 string."""
         return self.get(key, fn=lambda x: x.decode('utf-8'))
 
     def get_int(self, key: str) -> Optional[int]:
-        """Get value as integer."""
         return self.get(key, fn=int)
-
-
-# Test the Cache class with conversion functions
-if __name__ == "__main__":
-    cache = Cache()
-    cache.store("Hello, Redis!")
-    cache.store("Another value")
-
-    TEST_CASES = {
-        b"foo": None,
-        123: int,
-        "bar": lambda d: d.decode("utf-8")
-    }
-
-    for value, fn in TEST_CASES.items():
-        key = cache.store(value)
-        assert cache.get(key, fn=fn) == value, "Assertion failed"
-
-    print("All tests passed.")
