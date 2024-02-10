@@ -1,44 +1,82 @@
 #!/usr/bin/env python3
 """
-Auth module for handling authentication.
+Defines the Flask application and its routes. It includes CORS setup for
+handling cross-origin requests, authentication setup based on environment
+variables, before request processing for authentication, and custom error
+handlers for 401, 403, and 404 errors.
 """
-from flask import request
-from typing import List, TypeVar
+
+from api.v1.views import app_views
+from flask import Flask, jsonify, abort, request
+from flask_cors import CORS, cross_origin
+from os import getenv
+
+# Initialize Flask application
+app = Flask(__name__)
+app.register_blueprint(app_views)  # Register the application views
+
+# Setup CORS to allow all origins for API v1 routes
+CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
+
+# Initialize authentication system based on AUTH_TYPE environment variable
+auth = None
+if getenv("AUTH_TYPE") == 'auth':
+    from api.v1.auth.auth import Auth
+    auth = Auth()
+elif getenv("AUTH_TYPE") == "basic_auth":
+    from api.v1.auth.basic_auth import BasicAuth
+    auth = BasicAuth()
+elif getenv("AUTH_TYPE") == "session_auth":
+    from api.v1.auth.session_auth import SessionAuth
+    auth = SessionAuth()
 
 
-class Auth:
+@app.before_request
+def before_request():
     """
-    Auth class to manage the API authentication.
+    Runs before each request. Checks if authentication is required and verifies
+    the current user's credentials. If authentication fails, returns 401 or 403
     """
+    if auth is None:
+        return None  # No authentication required
 
-    def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """
-        Determines if the path requires authentication.
-        """
-        if path is None or excluded_paths is None or len(excluded_paths) == 0:
-            return True
+    # Paths that don't require authentication
+    exempt_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
+                    '/api/v1/forbidden/', '/api/v1/auth_session/login/']
 
-        # Normalize paths to ensure slash tolerance
-        normalized_path = path[:-1] if path.endswith('/') else path
-        normalized_excluded = [
-            p[:-1] if p.endswith('/') else p
-            for p in excluded_paths]
+    if not auth.require_auth(request.path, exempt_paths):
+        return  # Skip authentication for exempt paths
 
-        # Normalize the input path in the same way
-        normalized_path = path[:-1] if path.endswith('/') else path
+    # Verify authentication via headers or cookies
+    if (not auth.authorization_header(request) and
+            not auth.session_cookie(request)):
+        abort(401)  # Unauthorized access
 
-        return normalized_path not in normalized_excluded
+    request.current_user = auth.current_user(request)
+    if request.current_user is None:
+        abort(403)  # Forbidden access
 
-    def authorization_header(self, request=None) -> str:
-        """
-        Returns the Authorization header value from the request.
-        """
-        if request is None:
-            return None
-        return request.headers.get('Authorization', None)
 
-    def current_user(self, request=None) -> TypeVar('User'):
-        """
-        Returns the current user from the request.
-        """
-        return None
+@app.errorhandler(401)
+def unauthorized(error):
+    """Handles 401 Unauthorized errors by returning JSON response."""
+    return jsonify({"error": "Unauthorized"}), 401
+
+
+@app.errorhandler(403)
+def forbidden(error):
+    """Handles 403 Forbidden errors by returning JSON response."""
+    return jsonify({"error": "Forbidden"}), 403
+
+
+@app.errorhandler(404)
+def not_found(error):
+    """Handles 404 Not Found errors by returning JSON response."""
+    return jsonify({"error": "Not found"}), 404
+
+
+if __name__ == "__main__":
+    # Run Flask application with host and port
+    host = getenv("API_HOST", "0.0.0.0")
+    port = getenv("API_PORT", "5000")
+    app.run(host=host, port=port)
