@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-""" handles all routes for the views for Session authentication """
+"""
+This modules handles all the views and routes
+for Session authentication
+"""
 from flask import abort, jsonify, request
 from models.user import User
 from api.v1.views import app_views
@@ -8,7 +11,7 @@ from os import getenv
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def auth_session_login() -> str:
-    """Method that handle all sessionS authentication login """
+    """Handles the POST request for session authentication login """
     email = request.form.get('email')
     password = request.form.get('password')
     if not email:
@@ -32,7 +35,8 @@ def auth_session_login() -> str:
                  strict_slashes=False)
 def logout() -> str:
     """
-    Task8.  manage route DELETE /api/v1/auth_session/logout
+    Handles the DELETE request to log out from session
+    authentication system
     """
     from api.v1.app import auth
     destroy_session = auth.destroy_session(request)
