@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
+""" This module defines view functions for user-related actions
 """
-This module defines view functions for user-related actions, including
-listing, retrieving, creating, deleting, and updating user records. Each
-function is mapped to a specific HTTP method and route, with JSON responses
-that conform to RESTful standards.
-"""
-
 from api.v1.views import app_views
 from flask import abort, jsonify, request
 from models.user import User
@@ -13,11 +8,9 @@ from models.user import User
 
 @app_views.route('/users', methods=['GET'], strict_slashes=False)
 def view_all_users() -> str:
-    """
-    Retrieves a list of all user records.
-
-    Returns:
-        - JSON list of all users.
+    """ Retrieves a list of all user records.
+    Return:
+      - list of all User objects JSON represented
     """
     all_users = [user.to_json() for user in User.all()]
     return jsonify(all_users)
@@ -25,19 +18,19 @@ def view_all_users() -> str:
 
 @app_views.route('/users/<user_id>', methods=['GET'], strict_slashes=False)
 def view_one_user(user_id: str = None) -> str:
+    """ GET /api/v1/users/<user_id>
+    Path parameter:
+      - User ID
+    Return:
+      - User object JSON represented
+      - 404 if the User ID doesn't exist
+      retrieve the authenticated User object.
     """
-    Retrieves a single user record by ID. Special 'me' ID for current user.
-
-    Parameters:
-        - user_id: ID of the user or 'me' for the current user.
-
-    Returns:
-        - JSON representation of the user.
-        - 404 error if user ID not found or 'me' with no current user.
-    """
-    if user_id is None or (user_id == 'me' and request.current_user is None):
+    if user_id is None:
         abort(404)
-    if user_id == 'me':
+    if user_id == 'me' and request.current_user is None:
+        abort(404)
+    if user_id == 'me' and request.current_user:
         return jsonify(request.current_user.to_json())
     user = User.get(user_id)
     if user is None:
@@ -47,15 +40,12 @@ def view_one_user(user_id: str = None) -> str:
 
 @app_views.route('/users/<user_id>', methods=['DELETE'], strict_slashes=False)
 def delete_user(user_id: str = None) -> str:
-    """
-    Deletes a user record by ID.
-
-    Parameters:
-        - user_id: ID of the user to delete.
-
-    Returns:
-        - Empty JSON response if deletion successful.
-        - 404 error if user ID not found.
+    """ DELETE /api/v1/users/:id
+    Path parameter:
+      - User ID
+    Return:
+      - empty JSON is the User has been correctly deleted
+      - 404 if the User ID doesn't exist
     """
     if user_id is None:
         abort(404)
@@ -68,79 +58,70 @@ def delete_user(user_id: str = None) -> str:
 
 @app_views.route('/users', methods=['POST'], strict_slashes=False)
 def create_user() -> str:
+    """ POST /api/v1/users/
+    JSON body:
+      - email
+      - password
+      - last_name (optional)
+      - first_name (optional)
+    Return:
+      - User object JSON represented
+      - 400 if can't create the new User
     """
-    Creates a new user record from JSON request data.
-
-    Expected JSON keys:
-        - email (required)
-        - password (required)
-        - last_name (optional)
-        - first_name (optional)
-
-    Returns:
-        - JSON representation of the created user.
-        - 400 error if creation fails due to missing data or format issues.
-    """
+    rj = None
+    error_msg = None
     try:
         rj = request.get_json()
-    except Exception:
-        return jsonify({'error': "Wrong format"}), 400
-
-    error_msg = None
+    except Exception as e:
+        rj = None
     if rj is None:
         error_msg = "Wrong format"
-    elif not rj.get("email"):
+    if error_msg is None and rj.get("email", "") == "":
         error_msg = "email missing"
-    elif not rj.get("password"):
+    if error_msg is None and rj.get("password", "") == "":
         error_msg = "password missing"
-
-    if error_msg:
-        return jsonify({'error': error_msg}), 400
-
-    try:
-        user = User()
-        user.email = rj.get("email")
-        user.password = rj.get("password")
-        user.first_name = rj.get("first_name", "")
-        user.last_name = rj.get("last_name", "")
-        user.save()
-        return jsonify(user.to_json()), 201
-    except Exception as e:
-        return jsonify({'error': f"Can't create User: {e}"}), 400
+    if error_msg is None:
+        try:
+            user = User()
+            user.email = rj.get("email")
+            user.password = rj.get("password")
+            user.first_name = rj.get("first_name")
+            user.last_name = rj.get("last_name")
+            user.save()
+            return jsonify(user.to_json()), 201
+        except Exception as e:
+            error_msg = "Can't create User: {}".format(e)
+    return jsonify({'error': error_msg}), 400
 
 
 @app_views.route('/users/<user_id>', methods=['PUT'], strict_slashes=False)
 def update_user(user_id: str = None) -> str:
-    """
-    Updates a user record by ID based on JSON request data.
-
-    Parameters:
-        - user_id: ID of the user to update.
-
-    Expected JSON keys (all optional):
-        - last_name
-        - first_name
-
-    Returns:
-        - JSON representation of the updated user.
-        - 400 error if update fails due to missing user ID or bad format.
-        - 404 error if user ID not found.
+    """ PUT /api/v1/users/:id
+    Path parameter:
+      - User ID
+    JSON body:
+      - last_name (optional)
+      - first_name (optional)
+    Return:
+      - User object JSON represented
+      - 404 if the User ID doesn't exist
+      - 400 if can't update the User
     """
     if user_id is None:
         abort(400)
     user = User.get(user_id)
     if user is None:
-        abort(404)
-
+        abort(400)
+    rj = None
     try:
         rj = request.get_json()
-    except Exception:
-        return jsonify({'error': "Wrong format"}), 400
-
+    except Exception as e:
+        rj = None
     if rj is None:
         return jsonify({'error': "Wrong format"}), 400
-
-    user.first_name = rj.get('first_name', user.first_name)
-    user.last_name = rj.get('last_name', user.last_name)
+    if rj.get('first_name') is not None:
+        user.first_name = rj.get('first_name')
+    if rj.get('last_name') is not None:
+        user.last_name = rj.get('last_name')
     user.save()
     return jsonify(user.to_json()), 200
