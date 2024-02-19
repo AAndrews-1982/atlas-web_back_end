@@ -62,3 +62,7 @@ Click to show/hide file contents
 Click to show/hide file contents
 and…
 Don’t forget to run $ npm install when you have the package.json
+
+### <a name="task0"></a>0. Task
+### <a name="task1"></a>1. Task
+### <a name="task2"></a>2. Task
