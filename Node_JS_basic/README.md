@@ -1,5 +1,7 @@
 # NodeJS Basics
 
+![82692897e15d9f03256f](https://github.com/AAndrews-1982/atlas-web_back_end/assets/116847683/fb92511f-2107-4414-9c60-7b5f026f28c1)
+
 ## Resources
 Read or watch:
 
