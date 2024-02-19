@@ -39,11 +39,13 @@ At the end of this project, you are expected to be able to explain to anyone, wi
 - Your code will be tested using Jest and the command npm run test
 - Your code will be verified against lint using ESLint
 - Your code needs to pass all the tests and lint. You can verify the entire project running '''npm run full-test'''
-- All of your functions/classes must be exported by using this format: '''module.exports = myFunction;'''
+- All of your functions/classes must be exported by using this format: module.exports = myFunction;
 
 # Provided files
-'''database.csv'''
-'''firstname,lastname,age,field
+
+database.csv
+
+<a firstname,lastname,age,field>
 Johann,Kerbrou,30,CS
 Guillaume,Salou,30,SWE
 Arielle,Salou,20,CS
@@ -62,7 +64,3 @@ Click to show/hide file contents
 Click to show/hide file contents
 and…
 Don’t forget to run $ npm install when you have the package.json
-
-### <a name="task0"></a>0. Task
-### <a name="task1"></a>1. Task
-### <a name="task2"></a>2. Task
