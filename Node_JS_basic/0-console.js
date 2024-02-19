@@ -1,6 +1,5 @@
-function displayMessage(message) {
-  console.log(message);
-}
+// Function to display a message in STDOUT
+const displayMessage = (str) => console.log(str);
 
 module.exports = displayMessage;
 
