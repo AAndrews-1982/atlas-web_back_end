@@ -4,9 +4,12 @@ const fs = require('fs').promises;
 async function countStudents(path) {
   try {
     const data = await fs.readFile(path, 'utf8');
-    const lines = data.split('\n').filter((line) => line).slice(1); // Adjusted for ESLint: Added parentheses around arrow function argument, and fixed array-bracket-spacing
-    const students = lines.map((line) => { // Adjusted for ESLint: Added parentheses around arrow function argument
-      const [, , , field] = line.split(','); // Adjusted for ESLint: Fixed array-bracket-spacing
+    // Adjusted indentation to comply with ESLint rules
+    const lines = data.split('\n')
+      .filter((line) => line)
+      .slice(1);
+    const students = lines.map((line) => {
+      const [, , , field] = line.split(',');
       return { field };
     });
 
@@ -15,19 +18,21 @@ async function countStudents(path) {
       return acc;
     }, {});
 
-    let message = `Number of students: ${students.length}\n`;
+    // Changed 'let' to 'const' as per ESLint recommendation
+    const messageParts = [`Number of students: ${students.length}`];
     Object.entries(fields).forEach(([field, count]) => {
-      const names = lines.filter((line) => line.endsWith(field)).map((line) => line.split(',')[0]); // Adjusted for ESLint: Added parentheses around arrow function argument
-      message += `Number of students in ${field}: ${count}. List: ${names.join(', ')}\n`;
+      // Adjusted indentation to comply with ESLint rules
+      const names = lines.filter((line) => line.endsWith(field))
+        .map((line) => line.split(',')[0]);
+      messageParts.push(`Number of students in ${field}: ${count}. List: ${names.join(', ')}`);
     });
 
-    return message.trim();
+    return messageParts.join('\n');
   } catch (err) {
     throw new Error('Cannot load the database');
   }
 }
 
-// Get the database path from the command line arguments
 const databasePath = process.argv[2];
 
 const app = http.createServer(async (req, res) => {
