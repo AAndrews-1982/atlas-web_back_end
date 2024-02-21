@@ -1,13 +1,12 @@
 const http = require('http');
 const fs = require('fs').promises;
 
-// Function to count students from the CSV, similar to 3-read_file_async.js
 async function countStudents(path) {
   try {
     const data = await fs.readFile(path, 'utf8');
-    const lines = data.split('\n').filter(line => line).slice(1); // Skip header and filter empty lines
-    const students = lines.map(line => {
-      const [ , , , field] = line.split(',');
+    const lines = data.split('\n').filter((line) => line).slice(1); // Adjusted for ESLint: Added parentheses around arrow function argument, and fixed array-bracket-spacing
+    const students = lines.map((line) => { // Adjusted for ESLint: Added parentheses around arrow function argument
+      const [, , , field] = line.split(','); // Adjusted for ESLint: Fixed array-bracket-spacing
       return { field };
     });
 
@@ -18,7 +17,7 @@ async function countStudents(path) {
 
     let message = `Number of students: ${students.length}\n`;
     Object.entries(fields).forEach(([field, count]) => {
-      const names = lines.filter(line => line.endsWith(field)).map(line => line.split(',')[0]);
+      const names = lines.filter((line) => line.endsWith(field)).map((line) => line.split(',')[0]); // Adjusted for ESLint: Added parentheses around arrow function argument
       message += `Number of students in ${field}: ${count}. List: ${names.join(', ')}\n`;
     });
 
