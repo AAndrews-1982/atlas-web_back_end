@@ -4,7 +4,7 @@ const readline = require('readline');
 // Create an interface for input and output
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout
+  output: process.stdout,
 });
 
 // Display the welcome message and prompt for the user's name
@@ -21,4 +21,3 @@ rl.on('line', (input) => {
 rl.on('close', () => {
   console.log('This important software is now closing');
 });
-
