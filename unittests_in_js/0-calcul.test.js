@@ -1,20 +1,16 @@
+const calculateNumber = require("./0-calcul.js");
 const assert = require('assert');
-const calculateNumber = require('./0-calcul');
 
-describe('calculateNumber', function() {
-  it('sums two rounded numbers', function() {
-    assert.strictEqual(calculateNumber(1, 3), 4);
-  });
+describe('calculateNumber functionality', function() {
+    it('accurately sums two rounded numbers, including decimals.', function () {
+        assert.strictEqual(calculateNumber(1, 3), 4, '1 + 3 should equal 4');
+        assert.strictEqual(calculateNumber(1, 3.7), 5, '1 + 3.7 should round and equal 5');
+        assert.strictEqual(calculateNumber(1.2, 3.7), 5, '1.2 + 3.7 should round and equal 5');
+        assert.strictEqual(calculateNumber(4.6, 5.7), 11, '4.6 + 5.7 should round and equal 11');
+    });
 
-  it('sums two rounded numbers, including a decimal rounded up', function() {
-    assert.strictEqual(calculateNumber(1, 3.7), 5);
-  });
-
-  it('sums two rounded numbers, both decimals rounded up', function() {
-    assert.strictEqual(calculateNumber(1.2, 3.7), 5);
-  });
-
-  it('sums two rounded numbers, including a decimal exactly at .5', function() {
-    assert.strictEqual(calculateNumber(1.5, 3.7), 6);
-  });
+    it('correctly handles the sum of negative numbers, rounding them as expected.', function() {
+        assert.strictEqual(calculateNumber(-1, -10), -11, '-1 + -10 should equal -11');
+        assert.strictEqual(calculateNumber(-11.4, -38.7), -50, '-11.4 + -38.7 should round and equal -50');
+    });
 });
