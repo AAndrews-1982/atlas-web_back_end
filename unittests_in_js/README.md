@@ -1,27 +1,26 @@
 # Unittests in JS
 
-![Uploading![90f79a666e174e6c4ffc](https://github.com/AAndrews-1982/atlas-web_back_end/assets/116847683/fae07170-de84-479b-acf5-53f6da2918d7)
- 90f79a666e174e6c4ffc.jpg…]()
+![90f79a666e174e6c4ffc](https://github.com/AAndrews-1982/atlas-web_back_end/assets/116847683/0d22ca9f-c4c8-4853-885e-eca8391db0f8)
 
 ## Resources
 #### Read or watch:
 
-- Mocha documentation
+- #### Mocha documentation
 - Link: https://mochajs.org/
 
-- Chai
+- #### Chai
 - Link: https://www.chaijs.com/api/
 
-- Sinon
+- #### Sinon
 - Link: https://sinonjs.org/#get-started
 
-- Express
+- #### Express
 - Link: https://expressjs.com/en/guide/routing.html
 
-- Request
+- #### Request
 - Link: https://www.npmjs.com/package/request
 
-- How to Test NodeJS Apps using Mocha, Chai and SinonJS
+- #### How to Test NodeJS Apps using Mocha, Chai and SinonJS
 - Link: https://www.digitalocean.com/community
 
 ## Learning Objectives
