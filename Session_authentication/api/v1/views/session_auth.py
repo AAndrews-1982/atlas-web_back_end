@@ -8,7 +8,7 @@ from os import getenv
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def auth_session_login() -> str:
-    """Method that handle all sessionS authentication login """
+    """Method that handle all sessions authentication login """
     email = request.form.get('email')
     password = request.form.get('password')
     if not email:
