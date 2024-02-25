@@ -1,11 +1,12 @@
 function calculateNumber(a, b) {
-    // Check if both arguments are of type number
-    if (typeof a !== 'number' || typeof b !== 'number') {
-        // Explicitly return null for invalid inputs
-        return null;
+    // Directly return the sum of rounded numbers if both are numbers
+    if (typeof a === 'number' && typeof b === 'number') {
+        return Math.round(a) + Math.round(b);
+    } else {
+        // If either a or b is not a number, handle the error or invalid input explicitly
+        console.error("Invalid input: both a and b must be numbers.");
+        return null; // Return null to indicate the error situation
     }
-    // Round the numbers and return their sum
-    return Math.round(a) + Math.round(b);
 }
 
 module.exports = calculateNumber;
