@@ -1,0 +1,4 @@
+// 1. Create a Database.
+// Write a script that creates or uses the database my_db
+
+use my_db

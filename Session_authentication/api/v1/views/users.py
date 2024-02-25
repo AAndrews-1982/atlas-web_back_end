@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" Module of Users views
+""" This module defines view functions for user-related actions
 """
 from api.v1.views import app_views
 from flask import abort, jsonify, request
@@ -8,7 +8,7 @@ from models.user import User
 
 @app_views.route('/users', methods=['GET'], strict_slashes=False)
 def view_all_users() -> str:
-    """ GET /api/v1/users
+    """ Retrieves a list of all user records.
     Return:
       - list of all User objects JSON represented
     """

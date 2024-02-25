@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/usr/bin/env python3
 
 // This script lists all databases in MongoDB.
@@ -16,3 +17,8 @@ def list_databases():
 
 if __name__ == "__main__":
     list_databases()
+=======
+// 0. List all databases
+// Write a script that lists all databases in MongoDB.
+show dbs
+>>>>>>> 1a4c941cf51561b2406eb51ecf45e1181a801385
