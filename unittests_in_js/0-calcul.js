@@ -1,12 +1,10 @@
+// Define a function named calculateNumber to compute the sum of two numbers
+// It takes two parameters, a and b, rounds them to the nearest integer, and returns their sum
+
 function calculateNumber(a, b) {
-    // Directly return the sum of rounded numbers if both are numbers
-    if (typeof a === 'number' && typeof b === 'number') {
-        return Math.round(a) + Math.round(b);
-    } else {
-        // If either a or b is not a number, handle the error or invalid input explicitly
-        console.error("Invalid input: both a and b must be numbers.");
-        return null; // Return null to indicate the error situation
-    }
+  // Round both parameters to the nearest integer and sum them
+  return Math.round(a) + Math.round(b);
 }
 
+// Make the function available for import in other files
 module.exports = calculateNumber;

@@ -1,16 +1,23 @@
-const calculateNumber = require("./0-calcul.js");
+// Import the calculateNumber function from the 0-calcul.js module
+const calculateNumber = require("./0-calcul.js")
+// Import the assert module for performing assertions
 const assert = require('assert');
 
-describe('Testing calculateNumber functionality', function() {
-    it('accurately calculates the sum of two rounded numbers, handling decimals correctly.', function () {
-        assert.strictEqual(calculateNumber(1, 3), 4, 'Rounding 1 and 3 should yield 4');
-        assert.strictEqual(calculateNumber(1, 3.7), 5, 'Rounding 1 and 3.7 should yield 5');
-        assert.strictEqual(calculateNumber(1.2, 3.7), 5, 'Rounding 1.2 and 3.7 should yield 5');
-        assert.strictEqual(calculateNumber(4.6, 5.7), 11, 'Rounding 4.6 and 5.7 should yield 11');
+// Describe a test suite for the calculateNumber function
+describe('calculateNumber', function() {
+    // Test case: Checks if the function correctly returns the sum of two rounded numbers
+    it('Returns the sum of two rounded numbers.', function () {
+        // Assert that calculateNumber correctly sums and rounds the input numbers
+        assert.equal(calculateNumber(1, 3), 4);
+        assert.equal(calculateNumber(1, 3.7), 5);
+        assert.equal(calculateNumber(1.2, 3.7), 5);
+        assert.equal(calculateNumber(4.6, 5.7), 11);
     });
 
-    it('correctly sums up rounded negative numbers, demonstrating rounding logic with negatives.', function() {
-        assert.strictEqual(calculateNumber(-1, -10), -11, 'Rounding -1 and -10 should yield -11');
-        assert.strictEqual(calculateNumber(-11.4, -38.7), -50, 'Rounding -11.4 and -38.7 should yield -50');
+    // Test case: Verifies the function works as expected with negative numbers
+    it('Returns the sum of two negative rounded numbers.', () => {
+        // Perform strict equality checks to ensure accurate rounding and summing of negative numbers
+        assert.strictEqual(calculateNumber(-1, -10), -11);
+        assert.strictEqual(calculateNumber(-11.4, -38.7), -50);
     });
 });
